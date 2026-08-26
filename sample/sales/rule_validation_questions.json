@@ -1,0 +1,114 @@
+[
+  {
+    "id": "r001",
+    "question": "直近1年の売上金額を月別に集計して。全社の合計でいい。",
+    "unique": true,
+    "basis": "「直近1年」→ 集計対象を過去1年間の取引に限定しており、母集合を決める期間が引用できる",
+    "group_by": "月",
+    "tables": ["sales"]
+  },
+  {
+    "id": "r002",
+    "question": "2025年の売上推移を、店舗別かつ月別で見たい。",
+    "unique": true,
+    "basis": "「2025年」→ 対象を2025年中の取引に限定しており、母集合を決める期間が引用できる",
+    "group_by": "店舗×月",
+    "tables": ["sales", "stores"]
+  },
+  {
+    "id": "r003",
+    "question": "店舗別の売上をランキングにして、大きい順に並べて。",
+    "unique": false,
+    "basis": "引用できる語が無い。集計対象の期間も、閉店した店舗を対象に含めるかも質問文が決めていない",
+    "group_by": "店舗",
+    "tables": ["sales", "stores"]
+  },
+  {
+    "id": "r004",
+    "question": "有効な会員だけで、会員ランク別の人数を出して。",
+    "unique": true,
+    "basis": "「有効な会員だけ」→ is_active が false（退会・休眠）の会員を母集合から除くと質問文が言っている",
+    "group_by": "会員ランク",
+    "tables": ["members"]
+  },
+  {
+    "id": "r005",
+    "question": "今営業している店舗は何店舗ある？",
+    "unique": true,
+    "basis": "「今営業している」→ 閉店済み（close_date が非NULL）の店舗を母集合から除くと質問文が言っている",
+    "group_by": null,
+    "tables": ["stores"]
+  },
+  {
+    "id": "r006",
+    "question": "うちの店舗は全部でいくつある？",
+    "unique": false,
+    "basis": "引用できる語が無い。「全部で」だけでは、閉店した店舗を数に含めるか、営業中のものだけを数えるかが決まっていない",
+    "group_by": null,
+    "tables": ["stores"]
+  },
+  {
+    "id": "r007",
+    "question": "商品大分類ごとの売上構成比を教えて。",
+    "unique": false,
+    "basis": "引用できる語が無い。対象期間も、廃番になった商品を売上に含めるかも質問文が決めていない",
+    "group_by": "商品大分類",
+    "tables": ["sale_items", "products"]
+  },
+  {
+    "id": "r008",
+    "question": "廃番になった商品は何点ある？",
+    "unique": true,
+    "basis": "「廃番になった」→ is_discontinued が true の商品に母集合を限定すると質問文が言っている",
+    "group_by": null,
+    "tables": ["products"]
+  },
+  {
+    "id": "r009",
+    "question": "会員の都道府県別の人数を出して。",
+    "unique": false,
+    "basis": "引用できる語が無い。「会員」だけでは、退会・休眠した会員を人数に含めるかが決まっていない",
+    "group_by": "都道府県",
+    "tables": ["members"]
+  },
+  {
+    "id": "r010",
+    "question": "現金払いの取引金額の合計はいくら？",
+    "unique": true,
+    "basis": "「現金払いの取引」→ payment_method が現金の取引に母集合を限定すると質問文が言っている（期間の限定は無く全期間が対象）",
+    "group_by": null,
+    "tables": ["sales"]
+  },
+  {
+    "id": "r011",
+    "question": "関西エリアの店舗の売上を合計して。",
+    "unique": false,
+    "basis": "引用できる語が無い。「関西」表記の店舗だけを対象にするのか、同義の「近畿」表記の店舗も含めるのかが決まっていない",
+    "group_by": null,
+    "tables": ["sales", "stores"]
+  },
+  {
+    "id": "r012",
+    "question": "EC経由の取引件数を月別に出して。",
+    "unique": false,
+    "basis": "引用できる語が無い。時間軸（月別）は決まっているが、「EC」表記の取引だけか、同義の「オンライン」表記も含めるかが決まっていない",
+    "group_by": "月",
+    "tables": ["sales"]
+  },
+  {
+    "id": "r013",
+    "question": "2026年1月に売上があった店舗の数は？",
+    "unique": true,
+    "basis": "「2026年1月に売上があった店舗」→ 対象月と、当月に取引のあった店舗という条件の両方を質問文が言っており母集合が決まる",
+    "group_by": null,
+    "tables": ["daily_store_summary"]
+  },
+  {
+    "id": "r014",
+    "question": "商品中分類別の平均販売単価を出して。",
+    "unique": false,
+    "basis": "引用できる語が無い。対象期間も、廃番になった商品の明細を含めるかも質問文が決めていない",
+    "group_by": "商品中分類",
+    "tables": ["sale_items", "products"]
+  }
+]

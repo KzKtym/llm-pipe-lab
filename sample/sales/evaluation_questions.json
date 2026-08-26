@@ -1,0 +1,440 @@
+[
+  {
+    "id": "q001",
+    "question": "店舗は全部で何店舗ある？",
+    "gold_sql": "SELECT COUNT(*) AS store_count\nFROM demo_sales.stores;",
+    "tags": [
+      "集計"
+    ],
+    "note": "",
+    "difficulty": "易"
+  },
+  {
+    "id": "q002",
+    "question": "今も営業している店舗は何店舗ある？",
+    "gold_sql": "SELECT COUNT(*) AS active_store_count\nFROM demo_sales.stores\nWHERE close_date IS NULL;",
+    "tags": [
+      "集計",
+      "フラグ"
+    ],
+    "note": "営業中は close_date が NULL の店舗。閉店済み(close_date あり)を除外する。",
+    "difficulty": "易"
+  },
+  {
+    "id": "q003",
+    "question": "会員数を会員ランク別に多い順で教えて",
+    "gold_sql": "SELECT member_rank, COUNT(*) AS member_count\nFROM demo_sales.members\nGROUP BY member_rank\nORDER BY member_count DESC;",
+    "tags": [
+      "集計",
+      "グループ化",
+      "並べ替え"
+    ],
+    "ordered": true,
+    "note": "",
+    "difficulty": "易"
+  },
+  {
+    "id": "q004",
+    "question": "支払方法ごとの取引件数は？",
+    "gold_sql": "SELECT payment_method, COUNT(*) AS txn_count\nFROM demo_sales.sales\nGROUP BY payment_method\nORDER BY txn_count DESC;",
+    "tags": [
+      "集計",
+      "グループ化"
+    ],
+    "note": "",
+    "difficulty": "易"
+  },
+  {
+    "id": "q005",
+    "question": "2026年7月の総売上（税抜）はいくら？",
+    "gold_sql": "SELECT SUM(total_amount) AS sales_amount\nFROM demo_sales.sales\nWHERE sold_at >= '2026-07-01' AND sold_at < '2026-08-01';",
+    "tags": [
+      "集計",
+      "期間_絶対"
+    ],
+    "note": "金額は税抜(sales.total_amount)。7月は sold_at が 2026-07-01 以上 2026-08-01 未満。",
+    "difficulty": "易"
+  },
+  {
+    "id": "q006",
+    "question": "商品は大分類ごとに何件ある？",
+    "gold_sql": "SELECT category_l, COUNT(*) AS product_count\nFROM demo_sales.products\nGROUP BY category_l\nORDER BY product_count DESC;",
+    "tags": [
+      "集計",
+      "グループ化"
+    ],
+    "note": "",
+    "difficulty": "易"
+  },
+  {
+    "id": "q007",
+    "question": "電子マネーで支払われた取引は何件？",
+    "gold_sql": "SELECT COUNT(*) AS txn_count\nFROM demo_sales.sales\nWHERE payment_method = '電子マネー';",
+    "tags": [
+      "集計"
+    ],
+    "note": "",
+    "difficulty": "易"
+  },
+  {
+    "id": "q008",
+    "question": "廃番になっていない商品は何件？",
+    "gold_sql": "SELECT COUNT(*) AS active_product_count\nFROM demo_sales.products\nWHERE is_discontinued = false;",
+    "tags": [
+      "集計",
+      "フラグ"
+    ],
+    "note": "廃番(is_discontinued=true)を除いた件数。",
+    "difficulty": "易"
+  },
+  {
+    "id": "q009",
+    "question": "会員の男女別の人数は？",
+    "gold_sql": "SELECT gender, COUNT(*) AS member_count\nFROM demo_sales.members\nWHERE gender IS NOT NULL\nGROUP BY gender\nORDER BY member_count DESC;",
+    "tags": [
+      "集計",
+      "グループ化",
+      "欠損"
+    ],
+    "note": "gender 未登録(NULL、約3割)は「男女別」の集計対象外として除外。",
+    "difficulty": "易"
+  },
+  {
+    "id": "q010",
+    "question": "店舗形態（路面・SC内・駅ナカ）ごとの店舗数は？",
+    "gold_sql": "SELECT store_type, COUNT(*) AS store_count\nFROM demo_sales.stores\nGROUP BY store_type\nORDER BY store_count DESC;",
+    "tags": [
+      "集計",
+      "グループ化"
+    ],
+    "note": "",
+    "difficulty": "易"
+  },
+  {
+    "id": "q011",
+    "question": "2026年7月の売上を店舗名ごとに多い順で教えて",
+    "gold_sql": "SELECT st.store_name, SUM(sa.total_amount) AS sales_amount\nFROM demo_sales.sales sa\nJOIN demo_sales.stores st ON st.store_id = sa.store_id\nWHERE sa.sold_at >= '2026-07-01' AND sa.sold_at < '2026-08-01'\nGROUP BY st.store_name\nORDER BY sales_amount DESC;",
+    "tags": [
+      "集計",
+      "グループ化",
+      "結合",
+      "期間_相対",
+      "並べ替え"
+    ],
+    "ordered": true,
+    "note": "対象は2026年7月（基準日 2026-08-14 の前月）。店舗は店舗名で識別。売上=税抜(total_amount)。",
+    "difficulty": "中"
+  },
+  {
+    "id": "q012",
+    "question": "ネット通販（EC）の売上は全体の何％か、小数第1位まで求めて",
+    "gold_sql": "SELECT ROUND(100.0 * SUM(total_amount) FILTER (WHERE channel IN ('EC','オンライン'))\n             / SUM(total_amount), 1) AS ec_share_pct\nFROM demo_sales.sales;",
+    "tags": [
+      "集計",
+      "比率",
+      "表記ゆれ"
+    ],
+    "note": "ネット通販は channel の「EC」と「オンライン」(同義の表記ゆれ)の合算。",
+    "difficulty": "中"
+  },
+  {
+    "id": "q013",
+    "question": "関西エリアの店舗は何店舗ある？",
+    "gold_sql": "SELECT COUNT(*) AS kansai_store_count\nFROM demo_sales.stores\nWHERE region IN ('関西','近畿');",
+    "tags": [
+      "集計",
+      "表記ゆれ"
+    ],
+    "note": "region は「関西」と「近畿」が同義で混在するため両方を数える。",
+    "difficulty": "中"
+  },
+  {
+    "id": "q014",
+    "question": "取引を「会員」「非会員」に区分して、それぞれの売上合計は？",
+    "gold_sql": "SELECT CASE WHEN member_id IS NULL THEN '非会員' ELSE '会員' END AS buyer_type,\n       SUM(total_amount) AS sales_amount\nFROM demo_sales.sales\nGROUP BY buyer_type\nORDER BY buyer_type;",
+    "tags": [
+      "集計",
+      "グループ化",
+      "非会員"
+    ],
+    "note": "非会員は sales.member_id が NULL の取引。 区分ラベル「会員」「非会員」は質問文で指定（正解SQLはこの2値のみ出力）。売上は税抜(total_amount)。",
+    "difficulty": "中"
+  },
+  {
+    "id": "q015",
+    "question": "商品大分類ごとの売上金額を多い順に",
+    "gold_sql": "SELECT p.category_l, SUM(i.line_amount) AS sales_amount\nFROM demo_sales.sale_items i\nJOIN demo_sales.products p ON p.product_id = i.product_id\nGROUP BY p.category_l\nORDER BY sales_amount DESC;",
+    "tags": [
+      "集計",
+      "グループ化",
+      "結合",
+      "並べ替え"
+    ],
+    "ordered": true,
+    "note": "",
+    "difficulty": "中"
+  },
+  {
+    "id": "q016",
+    "question": "取引件数が多い店舗トップ5を、店舗名と取引件数で教えて",
+    "gold_sql": "SELECT st.store_name, COUNT(*) AS txn_count\nFROM demo_sales.sales sa\nJOIN demo_sales.stores st ON st.store_id = sa.store_id\nGROUP BY st.store_name\nORDER BY txn_count DESC\nLIMIT 5;",
+    "tags": [
+      "集計",
+      "グループ化",
+      "結合",
+      "上位N"
+    ],
+    "note": "「トップ5」はどの5件が答えかを問うており、その並び順は要求していないため ordered なし。",
+    "difficulty": "中"
+  },
+  {
+    "id": "q017",
+    "question": "2026年上半期（1〜6月）の売上を月別（YYYY-MM）に見せて",
+    "gold_sql": "SELECT to_char(sold_at, 'YYYY-MM') AS ym, SUM(total_amount) AS sales_amount\nFROM demo_sales.sales\nWHERE sold_at >= '2026-01-01' AND sold_at < '2026-07-01'\nGROUP BY ym\nORDER BY ym;",
+    "tags": [
+      "集計",
+      "グループ化",
+      "期間_絶対"
+    ],
+    "note": "「推移」だが特定の並び順（時系列）を明示要求していないため ordered なし（月別の値の集合で判定）。 月は 'YYYY-MM' 形式で表す。売上=税抜(total_amount)。",
+    "difficulty": "中"
+  },
+  {
+    "id": "q018",
+    "question": "店頭とネット通販（EC＋オンライン）で、取引1件あたりの平均売上（客単価）はどれくらい違う？1円未満は四捨五入して",
+    "gold_sql": "SELECT CASE WHEN channel = '店頭' THEN '店頭' ELSE 'ネット通販' END AS channel_group,\n       ROUND(SUM(total_amount)::numeric / COUNT(*), 0) AS avg_ticket\nFROM demo_sales.sales\nGROUP BY channel_group\nORDER BY channel_group;",
+    "tags": [
+      "集計",
+      "グループ化",
+      "比率",
+      "表記ゆれ"
+    ],
+    "note": "ネット通販は「EC」「オンライン」(同義)を合算。客単価=売上合計/取引件数。",
+    "difficulty": "中"
+  },
+  {
+    "id": "q019",
+    "question": "会員ランク別の平均客単価は？1円未満は四捨五入して",
+    "gold_sql": "SELECT m.member_rank, ROUND(SUM(sa.total_amount)::numeric / COUNT(*), 0) AS avg_ticket\nFROM demo_sales.sales sa\nJOIN demo_sales.members m ON m.member_id = sa.member_id\nGROUP BY m.member_rank\nORDER BY avg_ticket DESC;",
+    "tags": [
+      "集計",
+      "グループ化",
+      "結合"
+    ],
+    "note": "会員ランクを持たない非会員(member_id NULL)は JOIN で除外される。",
+    "difficulty": "中"
+  },
+  {
+    "id": "q020",
+    "question": "定価より安く売られた明細は、明細全体の何％か、件数ベースで小数第1位まで求めて",
+    "gold_sql": "SELECT ROUND(100.0 * COUNT(*) FILTER (WHERE i.unit_price < p.unit_price) / COUNT(*), 1) AS discounted_pct\nFROM demo_sales.sale_items i\nJOIN demo_sales.products p ON p.product_id = i.product_id;",
+    "tags": [
+      "比率",
+      "結合",
+      "単価の取り違え"
+    ],
+    "note": "実売単価(sale_items.unit_price)が定価(products.unit_price)を下回る明細の割合。",
+    "difficulty": "中"
+  },
+  {
+    "id": "q021",
+    "question": "関西エリアの売上を店舗名ごとに多い順で教えて",
+    "gold_sql": "SELECT st.store_name, SUM(sa.total_amount) AS sales_amount\nFROM demo_sales.sales sa\nJOIN demo_sales.stores st ON st.store_id = sa.store_id\nWHERE st.region IN ('関西','近畿')\nGROUP BY st.store_name\nORDER BY sales_amount DESC;",
+    "tags": [
+      "集計",
+      "グループ化",
+      "結合",
+      "表記ゆれ",
+      "並べ替え"
+    ],
+    "ordered": true,
+    "note": "region の「関西」「近畿」(同義)を両方含める。",
+    "difficulty": "中"
+  },
+  {
+    "id": "q022",
+    "question": "会員数が多い都道府県トップ10を、都道府県と会員数で教えて",
+    "gold_sql": "SELECT pref, COUNT(*) AS member_count\nFROM demo_sales.members\nGROUP BY pref\nORDER BY member_count DESC\nLIMIT 10;",
+    "tags": [
+      "集計",
+      "グループ化",
+      "上位N"
+    ],
+    "note": "「トップ10」はどの10件が答えかを問うており、並び順は要求していないため ordered なし。",
+    "difficulty": "中"
+  },
+  {
+    "id": "q023",
+    "question": "生年月日が登録されている会員は、会員全体の何％か、小数第1位まで求めて",
+    "gold_sql": "SELECT ROUND(100.0 * COUNT(*) FILTER (WHERE birth_date IS NOT NULL) / COUNT(*), 1) AS birth_registered_pct\nFROM demo_sales.members;",
+    "tags": [
+      "比率",
+      "欠損"
+    ],
+    "note": "birth_date は約3割が未登録(NULL)。登録済み(非NULL)の割合を出す。",
+    "difficulty": "中"
+  },
+  {
+    "id": "q024",
+    "question": "非会員取引は全体の何％か、件数ベースで小数第1位まで求めて",
+    "gold_sql": "SELECT ROUND(100.0 * COUNT(*) FILTER (WHERE member_id IS NULL) / COUNT(*), 1) AS guest_pct\nFROM demo_sales.sales;",
+    "tags": [
+      "比率",
+      "非会員"
+    ],
+    "note": "非会員=member_id が NULL の取引。",
+    "difficulty": "中"
+  },
+  {
+    "id": "q025",
+    "question": "廃番商品を除いた、大分類ごとの売上金額は？",
+    "gold_sql": "SELECT p.category_l, SUM(i.line_amount) AS sales_amount\nFROM demo_sales.sale_items i\nJOIN demo_sales.products p ON p.product_id = i.product_id\nWHERE p.is_discontinued = false\nGROUP BY p.category_l\nORDER BY sales_amount DESC;",
+    "tags": [
+      "集計",
+      "グループ化",
+      "結合",
+      "フラグ"
+    ],
+    "note": "廃番(is_discontinued=true)の商品を除外して集計。",
+    "difficulty": "中"
+  },
+  {
+    "id": "q026",
+    "question": "2026年7月の売上は前年同月（2025年7月）と比べて何％増減したか、小数第1位まで求めて",
+    "gold_sql": "SELECT ROUND(100.0 * (\n      SUM(total_amount) FILTER (WHERE sold_at >= '2026-07-01' AND sold_at < '2026-08-01')\n    - SUM(total_amount) FILTER (WHERE sold_at >= '2025-07-01' AND sold_at < '2025-08-01')\n  ) / SUM(total_amount) FILTER (WHERE sold_at >= '2025-07-01' AND sold_at < '2025-08-01'), 1) AS yoy_pct\nFROM demo_sales.sales;",
+    "tags": [
+      "集計",
+      "期間_絶対",
+      "前年比",
+      "比率"
+    ],
+    "note": "前年同月=2025年7月。増減率=(当月-前年)/前年×100。 結果は増減率(％)のみを返す。",
+    "difficulty": "難"
+  },
+  {
+    "id": "q027",
+    "question": "日次店舗サマリを使って、平均日商を店舗名ごとに高い順で、1円未満は四捨五入して出して",
+    "gold_sql": "SELECT st.store_name, ROUND(AVG(d.sales_amount), 0) AS avg_daily_sales\nFROM demo_sales.daily_store_summary d\nJOIN demo_sales.stores st ON st.store_id = d.store_id\nGROUP BY st.store_name\nORDER BY avg_daily_sales DESC;",
+    "tags": [
+      "集計",
+      "グループ化",
+      "結合",
+      "サマリの欠落",
+      "並べ替え"
+    ],
+    "ordered": true,
+    "note": "daily_store_summary には取引ゼロの日の行が無い。よってこれは『売上があった日だけの平均』で、ゼロ日を分母に含めた真の日商平均より高く出る点に注意(q028と対)。",
+    "difficulty": "難"
+  },
+  {
+    "id": "q028",
+    "question": "2026年7月の平均日商を店舗名ごとに、取引が無かった日も含めて（1日=売上ゼロとして）、1円未満は四捨五入して出して",
+    "gold_sql": "SELECT st.store_name, ROUND(SUM(sa.total_amount)::numeric / 31, 0) AS avg_daily_sales_july\nFROM demo_sales.sales sa\nJOIN demo_sales.stores st ON st.store_id = sa.store_id\nWHERE sa.sold_at >= '2026-07-01' AND sa.sold_at < '2026-08-01'\nGROUP BY st.store_name\nORDER BY avg_daily_sales_july DESC;",
+    "tags": [
+      "集計",
+      "グループ化",
+      "結合",
+      "サマリの欠落",
+      "期間_絶対"
+    ],
+    "note": "2026年7月は31日。分母を31固定にすることで取引ゼロの日も平均に反映(サマリの欠落を補正)。当月に営業している店舗はいずれも全日営業のため分母=31。q027(サマリ平均)と比べると低くなる。",
+    "difficulty": "難"
+  },
+  {
+    "id": "q029",
+    "question": "定価ベースの売上（数量×定価）と実売ベースの売上の差額は合計いくら？",
+    "gold_sql": "SELECT SUM(i.quantity * p.unit_price) - SUM(i.line_amount) AS gap\nFROM demo_sales.sale_items i\nJOIN demo_sales.products p ON p.product_id = i.product_id;",
+    "tags": [
+      "集計",
+      "結合",
+      "単価の取り違え"
+    ],
+    "note": "定価ベース=数量×定価(products.unit_price)。実売ベース=line_amount(実売単価×数量−値引後)。差額=値引き・実売値下げの総額。 結果は差額(gap)のみを返す。定価ベース=数量×定価、実売ベース=line_amount。",
+    "difficulty": "難"
+  },
+  {
+    "id": "q030",
+    "question": "会員を年代で区分し、各年代の売上構成比は？年代は「20代」のように表記し、構成比は小数第1位まで求めて",
+    "gold_sql": "SELECT age_group,\n       ROUND(100.0 * SUM(amt) / SUM(SUM(amt)) OVER (), 1) AS share_pct\nFROM (\n  SELECT ((FLOOR(date_part('year', age(DATE '2026-08-14', m.birth_date)) / 10) * 10)::int)::text || '代' AS age_group,\n         sa.total_amount AS amt\n  FROM demo_sales.sales sa\n  JOIN demo_sales.members m ON m.member_id = sa.member_id\n  WHERE m.birth_date IS NOT NULL\n) t\nGROUP BY age_group\nORDER BY age_group;",
+    "tags": [
+      "集計",
+      "グループ化",
+      "結合",
+      "比率",
+      "欠損",
+      "非会員"
+    ],
+    "note": "年齢は基準日 2026-08-14 で算出。年代は「20代」のようなテキストで表記。非会員(member_id NULL)と生年月日未登録(birth_date NULL)は対象外。構成比の分母は対象（会員かつ生年月日登録あり）の売上合計。",
+    "difficulty": "難"
+  },
+  {
+    "id": "q031",
+    "question": "2026年5月15日〜8月14日に最も売れた商品トップ10を、商品名と販売数量で教えて",
+    "gold_sql": "SELECT p.product_name, SUM(i.quantity) AS qty\nFROM demo_sales.sale_items i\nJOIN demo_sales.sales sa ON sa.sale_id = i.sale_id\nJOIN demo_sales.products p ON p.product_id = i.product_id\nWHERE sa.sold_at >= '2026-05-15' AND sa.sold_at < '2026-08-15'\nGROUP BY p.product_name\nORDER BY qty DESC\nLIMIT 10;",
+    "tags": [
+      "集計",
+      "グループ化",
+      "結合",
+      "期間_相対",
+      "上位N"
+    ],
+    "note": "対象は2026年5月15日〜8月14日（基準日 2026-08-14 から遡る3か月、8/14 まで含む）。商品は商品名で識別、売れ行きは販売数量(SUM(quantity))。トップ10は該当集合が答えで並び順は問わない（ordered なし）。",
+    "difficulty": "難"
+  },
+  {
+    "id": "q032",
+    "question": "店舗形態ごとの売場面積あたり売上（面積効率）を高い順に、小数第1位まで求めて",
+    "gold_sql": "SELECT store_type,\n       ROUND(SUM(store_sales)::numeric / SUM(floor_area), 1) AS sales_per_sqm\nFROM (\n  SELECT st.store_id, st.store_type, st.floor_area,\n         COALESCE(SUM(sa.total_amount), 0) AS store_sales\n  FROM demo_sales.stores st\n  LEFT JOIN demo_sales.sales sa ON sa.store_id = st.store_id\n  WHERE st.floor_area IS NOT NULL\n  GROUP BY st.store_id, st.store_type, st.floor_area\n) t\nGROUP BY store_type\nORDER BY sales_per_sqm DESC;",
+    "tags": [
+      "集計",
+      "グループ化",
+      "結合",
+      "比率",
+      "欠損",
+      "並べ替え"
+    ],
+    "ordered": true,
+    "note": "floor_area 未計測(NULL、約2割)の店舗は除外。面積効率=売上合計÷売場面積合計(面積は店舗単位で1回だけ計上)。",
+    "difficulty": "難"
+  },
+  {
+    "id": "q033",
+    "question": "商品大分類ごとに、2026年上半期（1〜6月）と2025年同期の売上を並べて比較して",
+    "gold_sql": "SELECT p.category_l,\n  SUM(i.line_amount) FILTER (WHERE sa.sold_at >= '2026-01-01' AND sa.sold_at < '2026-07-01') AS h1_2026,\n  SUM(i.line_amount) FILTER (WHERE sa.sold_at >= '2025-01-01' AND sa.sold_at < '2025-07-01') AS h1_2025\nFROM demo_sales.sale_items i\nJOIN demo_sales.sales sa ON sa.sale_id = i.sale_id\nJOIN demo_sales.products p ON p.product_id = i.product_id\nWHERE (sa.sold_at >= '2026-01-01' AND sa.sold_at < '2026-07-01')\n   OR (sa.sold_at >= '2025-01-01' AND sa.sold_at < '2025-07-01')\nGROUP BY p.category_l\nORDER BY p.category_l;",
+    "tags": [
+      "集計",
+      "グループ化",
+      "結合",
+      "前年比",
+      "期間_絶対"
+    ],
+    "note": "上半期=1〜6月。2026年上半期(h1_2026)と2025年上半期(h1_2025)を大分類別に並べる。 2026年上半期(h1_2026)と2025年上半期(h1_2025)を大分類ごとに横並びで返す。売上=line_amount合計。",
+    "difficulty": "難"
+  },
+  {
+    "id": "q034",
+    "question": "ゴールド会員の売上は全売上の何％を占めるか、小数第1位まで求めて",
+    "gold_sql": "SELECT ROUND(100.0 * SUM(total_amount) FILTER (\n          WHERE member_id IN (SELECT member_id FROM demo_sales.members WHERE member_rank = 'ゴールド'))\n        / SUM(total_amount), 1) AS gold_share_pct\nFROM demo_sales.sales;",
+    "tags": [
+      "集計",
+      "比率",
+      "結合",
+      "非会員"
+    ],
+    "note": "分子=ゴールド会員の取引売上、分母=全売上(非会員含む)。非会員(member_id NULL)は分子に入らない。",
+    "difficulty": "難"
+  },
+  {
+    "id": "q035",
+    "question": "閉店した店舗について、店舗名と閉店日、閉店までの累計売上を教えて",
+    "gold_sql": "SELECT st.store_name, st.close_date, SUM(sa.total_amount) AS lifetime_sales\nFROM demo_sales.stores st\nJOIN demo_sales.sales sa ON sa.store_id = st.store_id\nWHERE st.close_date IS NOT NULL\nGROUP BY st.store_name, st.close_date\nORDER BY lifetime_sales DESC;",
+    "tags": [
+      "集計",
+      "グループ化",
+      "結合",
+      "フラグ"
+    ],
+    "note": "閉店店舗=close_date IS NOT NULL(3店)。ただしデータの集計期間(直近2年)内に取引があるのは1店のみで、残る2店は閉店日が期間開始(2024-08-15)より前のため取引が無く結果に現れない。",
+    "difficulty": "難"
+  }
+]

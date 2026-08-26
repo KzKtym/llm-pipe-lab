@@ -1,0 +1,4 @@
+# 開発時のみ。本体の実行には要らない。
+-r requirements.txt
+
+ruff==0.16.4

@@ -1,0 +1,200 @@
+[
+  {
+    "id": "s401",
+    "question": "店舗形態別の売上合計を出して",
+    "unique": false,
+    "types": [2],
+    "basis": "「店舗形態別の売上合計」— 閉店した店舗（close_date 非NULL の店舗3件、うち売上のある店1件）を集計に含めるか引用できる語が無い（型2）。店舗形態は3種で表記ゆれ・NULLは無い",
+    "group_by": "店舗形態",
+    "tables": ["stores", "sales"]
+  },
+  {
+    "id": "s402",
+    "question": "営業中の店舗にしぼって、店舗形態別の売上合計を出して",
+    "unique": true,
+    "types": [],
+    "basis": "「営業中の店舗にしぼって」→ close_date 非NULL の閉店店舗を除外すると明示（型2解消）。店舗形態は3種（路面/SC内/駅ナカ）でNULL 0件、表記ゆれ無し",
+    "group_by": "店舗形態",
+    "tables": ["stores", "sales"]
+  },
+  {
+    "id": "s403",
+    "question": "地域別の売上金額を集計して",
+    "unique": false,
+    "types": [2, 3],
+    "basis": "「地域別」— region に「関西」「近畿」の表記ゆれ（各4店舗、同一地域）があり同一地域としてまとめるか未確定（型3）。close_date 非NULL の閉店店舗（売上あり1件）を含めるか引用無し（型2）",
+    "group_by": "地域",
+    "tables": ["stores", "sales"]
+  },
+  {
+    "id": "s404",
+    "question": "2025年の月別の売上金額の推移を見せて",
+    "unique": true,
+    "types": [],
+    "basis": "「2025年の月別」→ 期間が明示され母集合は2025年に発生した取引。2025年の12ヶ月すべてに取引があり（数えた実数:12ヶ月）空き月は無い（型1）。総売上は全チャネル合算のため channel の表記ゆれは合計に影響せず、店舗の現在の閉店状態は過去の取引を母集合から外さない",
+    "group_by": "月（2025年）",
+    "tables": ["sales"]
+  },
+  {
+    "id": "s405",
+    "question": "会員ランク別の会員数を出して",
+    "unique": false,
+    "types": [2],
+    "basis": "「会員ランク別の会員数」— is_active=false（退会・休眠）2924件を数に含めるか引用無し（型2）。member_rank は3種でNULL無し・表記ゆれ無し",
+    "group_by": "会員ランク",
+    "tables": ["members"]
+  },
+  {
+    "id": "s406",
+    "question": "有効会員だけで、会員ランク別の人数を出して",
+    "unique": true,
+    "types": [],
+    "basis": "「有効会員だけで」→ is_active=true と明示（非有効2924件を除外、型2解消）。member_rank は3種すべて該当ありNULL 0件で表記ゆれ無し",
+    "group_by": "会員ランク",
+    "tables": ["members"]
+  },
+  {
+    "id": "s407",
+    "question": "都道府県別の会員数を教えて",
+    "unique": false,
+    "types": [2, 4],
+    "basis": "「都道府県別の会員数」— members.pref に包括値「その他」1048件（数えた）があり個別県に割り当てられず扱いが未確定（型4）。is_active=false 2924件を含めるか引用無し（型2）",
+    "group_by": "都道府県",
+    "tables": ["members"]
+  },
+  {
+    "id": "s408",
+    "question": "商品大分類別の売上金額を出して",
+    "unique": false,
+    "types": [2],
+    "basis": "「商品大分類別の売上金額」— is_discontinued=true（廃番）48件の商品の売上を含めるか引用無し（型2）。大分類は6種すべてに売上があり（数えた）表記ゆれ・NULL無し",
+    "group_by": "商品大分類",
+    "tables": ["products", "sale_items"]
+  },
+  {
+    "id": "s409",
+    "question": "チャネル別の取引件数を出して",
+    "unique": false,
+    "types": [3],
+    "basis": "「チャネル別の取引件数」— channel に「EC」「オンライン」の表記ゆれ（8096件/7985件、どちらもネット通販）があり同一チャネルとしてまとめるか未確定（型3）",
+    "group_by": "チャネル",
+    "tables": ["sales"]
+  },
+  {
+    "id": "s410",
+    "question": "性別ごとの会員数を出して",
+    "unique": false,
+    "types": [2, 4],
+    "basis": "「性別ごとの会員数」— gender は NULL（未登録）6008件・「その他」537件があり両者の扱いが未確定（型4）。is_active=false（退会・休眠）2924件を含めるか引用無し（型2）",
+    "group_by": "性別",
+    "tables": ["members"]
+  },
+  {
+    "id": "s411",
+    "question": "2026年上半期に最も売れた商品トップ10を出して",
+    "unique": true,
+    "types": [],
+    "basis": "「2026年上半期」→ 期間が明示され母集合は当期間の販売明細（当期に取引あり）。トップ10は売上実績のある商品のみで実績の無い実体を並べる問題は生じず（型1）、当期に売れた廃番商品もその実績で並ぶ。「最も売れた」の指標定義（金額か数量か）は判定対象外",
+    "group_by": "商品（売上トップ10）",
+    "tables": ["products", "sale_items"]
+  },
+  {
+    "id": "s412",
+    "question": "店舗ごとの平均客単価を出して",
+    "unique": false,
+    "types": [1, 2],
+    "basis": "「店舗ごとの」— 取引実績の無い店舗を0/NULL行として並べるか未確定（型1、40店中38店のみ取引あり＝2店は実績無し、数えた）。close_date 非NULL の閉店店舗（売上あり）を行に含めるか引用無し（型2）",
+    "group_by": "店舗",
+    "tables": ["stores", "sales"]
+  },
+  {
+    "id": "s413",
+    "question": "関西エリアの店舗の売上合計はいくら？",
+    "unique": false,
+    "types": [3],
+    "basis": "「関西エリアの店舗」— region に「関西」「近畿」の表記ゆれ（各4店舗、同一地域）があり、「関西」指定が近畿表記の店舗を含むか未確定（型3）。なお関西/近畿に閉店店舗は0件（数えた）で型2は生じない",
+    "group_by": null,
+    "tables": ["stores", "sales"]
+  },
+  {
+    "id": "s414",
+    "question": "全店舗の売上合計はいくら？",
+    "unique": true,
+    "types": [],
+    "basis": "「全店舗の売上合計」→「全」で全店舗を含むと明示し閉店店舗も除外しない（型2解消）。単一の合計値でチャネルの表記ゆれ・NULLは合計に影響しない",
+    "group_by": null,
+    "tables": ["sales"]
+  },
+  {
+    "id": "s415",
+    "question": "日用品カテゴリの商品は何種類ある？",
+    "unique": false,
+    "types": [2],
+    "basis": "「日用品カテゴリの商品は何種類」— is_discontinued=true（廃番）の商品（日用品で6件、数えた。日用品は全75件中6件が廃番）を数に含めるか引用無し（型2）",
+    "group_by": null,
+    "tables": ["products"]
+  },
+  {
+    "id": "s416",
+    "question": "2025年について、月別の会員取引件数を出して",
+    "unique": true,
+    "types": [],
+    "basis": "「会員取引件数」→ member_id が非NULL の取引（＝会員取引）を指し、非会員（member_id NULL 32034件）を除くと明示（型4解消）。2025年の12ヶ月すべてに取引あり（数えた:12、型1）。取引時点の事実のため会員の現在の is_active は母集合に影響しない",
+    "group_by": "月（2025年）",
+    "tables": ["sales"]
+  },
+  {
+    "id": "s417",
+    "question": "支払方法別の取引件数を出して",
+    "unique": true,
+    "types": [],
+    "basis": "「支払方法別の取引件数」→ payment_method は4種（現金/クレジット/電子マネー/QR）でNULL 0件・表記ゆれ無し。母集合は全取引で、取引の決済属性のみで分けるため書かれていない前提を要しない",
+    "group_by": "支払方法",
+    "tables": ["sales"]
+  },
+  {
+    "id": "s418",
+    "question": "電子マネーで支払われた取引の売上合計はいくら？",
+    "unique": true,
+    "types": [],
+    "basis": "「電子マネーで支払われた取引の売上合計」→ payment_method='電子マネー' で母集合が定まる単一の合計値。payment_method に表記ゆれ・NULLは無く他の前提を要しない",
+    "group_by": null,
+    "tables": ["sales"]
+  },
+  {
+    "id": "s419",
+    "question": "ゴールド会員は何人いる？",
+    "unique": false,
+    "types": [2],
+    "basis": "「ゴールド会員は何人」— is_active=false（退会・休眠）のゴールド会員398件（数えた）を含めるか引用無し（型2）",
+    "group_by": null,
+    "tables": ["members"]
+  },
+  {
+    "id": "s420",
+    "question": "まだ取り扱っている商品にしぼって、大分類別の平均定価を出して",
+    "unique": true,
+    "types": [],
+    "basis": "「まだ取り扱っている商品にしぼって」→ is_discontinued=false と明示（廃番48件を除外、型2解消）。大分類は6種でNULL・表記ゆれ無し。定価は products.unit_price で列が存在",
+    "group_by": "商品大分類",
+    "tables": ["products"]
+  },
+  {
+    "id": "s421",
+    "question": "北海道地域の店舗数を教えて",
+    "unique": false,
+    "types": [2],
+    "basis": "「北海道地域の店舗数」— close_date 非NULL の閉店店舗（北海道で1件、数えた。北海道3店中1店が閉店）を数に含めるか引用無し（型2）。北海道は関西/近畿のような表記ゆれの対象外",
+    "group_by": null,
+    "tables": ["stores"]
+  },
+  {
+    "id": "s422",
+    "question": "会員の平均年齢は？",
+    "unique": false,
+    "types": [2, 4],
+    "basis": "「会員の平均年齢」— birth_date が NULL（未登録）5980件（数えた）で平均の母数が未確定（型4）。is_active=false（退会・休眠）2924件を含めるか引用無し（型2）",
+    "group_by": null,
+    "tables": ["members"]
+  }
+]

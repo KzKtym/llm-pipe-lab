@@ -1,0 +1,10 @@
+- `stores.region` には「関西」と「近畿」が同じ意味で混在している。どちらか一方だけで絞ると取りこぼす
+- `sales.channel` には「EC」と「オンライン」が同じ意味で混在している。店頭は「店頭」
+- 実売単価は `sale_items.unit_price`。`products.unit_price` は定価であり、売上の計算に使ってはいけない
+- 売上金額は `sale_items.line_amount`（数量×実売単価−値引後）。`sales.total_amount` は取引単位の合計
+- `daily_store_summary` には、取引が1件以上あった（日付, 店舗）の組しか行が無い。取引ゼロの日は行そのものが存在しないため、日数で平均を取るときは注意する
+- `sales.member_id` が NULL の行は非会員の取引（全体の約4割）。会員を対象にする集計では除外する
+- `members.birth_date` と `members.gender` は約3割が NULL。属性別の集計では母数の扱いを決める必要がある
+- `stores.close_date` が NULL でない店舗は閉店済み。`products.is_discontinued` が true の商品は廃番
+- `stores.floor_area` は約2割が NULL
+- `sales.sold_at` は時刻を含む timestamp。日付で絞るときは境界に注意する

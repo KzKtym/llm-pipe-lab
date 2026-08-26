@@ -1,0 +1,118 @@
+{% extends "nl2sql/base.html" %}
+{% load static %}
+
+{% block title %}実験一覧 - NL→SQL 実験{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="m-0">実験一覧</h2>
+    <div class="d-flex gap-2 align-items-center">
+        <span class="text-muted text-small" id="selectHint">2件選ぶと比較できます</span>
+        <button type="button" class="btn btn-primary" id="compareBtn">比較</button>
+    </div>
+</div>
+
+{% if missing_details_count %}
+<div class="alert alert-secondary py-2 text-small">
+    明細ファイルが無い実験が {{ missing_details_count }} 件あります。
+    含めて比較すると、問題単位の勝敗（片方だけ正解した問題）は出せません。
+</div>
+{% endif %}
+
+{% if rows %}
+<div class="card shadow-sm border-0">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle m-0">
+            <thead class="table-secondary">
+                <tr>
+                    <th style="width: 60px;">ID</th>
+                    <th style="width: 130px;">作成日時</th>
+                    <th>名前</th>
+                    <th style="width: 110px;">実行結果一致率</th>
+                    <th style="width: 100px;">実行成功率</th>
+                    <th style="width: 90px;">採点対象</th>
+                    <th style="width: 90px;">トークン</th>
+                    <th style="width: 80px;">所要</th>
+                    <th>
+                        パラメータ
+                        {% if has_varying_params %}
+                        <div class="text-muted text-small fw-normal">実験間で差のある項目</div>
+                        {% endif %}
+                    </th>
+                    <th style="width: 100px;">評価データ</th>
+                    <th style="width: 70px;">明細</th>
+                    <th style="width: 50px;">選択</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                <tr>
+                    <td><a href="{% url 'nl2sql_detail' row.experiment.id %}">{{ row.experiment.id }}</a></td>
+                    <td class="text-small">{{ row.experiment.created_at|date:"Y/m/d H:i" }}</td>
+                    <td>
+                        <a href="{% url 'nl2sql_detail' row.experiment.id %}">{{ row.experiment.name|default:"(no title)" }}</a>
+                    </td>
+                    <td class="accuracy-cell text-primary">{{ row.experiment.execution_accuracy|stringformat:".4f" }}</td>
+                    <td>{{ row.experiment.valid_sql_rate|stringformat:".4f" }}</td>
+                    <td class="text-center">{{ row.experiment.scored }}/{{ row.experiment.question_count }}</td>
+                    <td class="text-end">{{ row.experiment.total_tokens }}</td>
+                    <td class="text-end">{{ row.experiment.elapsed_sec }}秒</td>
+                    <td class="text-small">
+                        {% if row.varying_parameter_line %}
+                        <div>{{ row.varying_parameter_line }}</div>
+                        <details>
+                            <summary class="text-muted" style="cursor:pointer;">全パラメータ</summary>
+                            <div class="text-muted mt-1">{{ row.parameter_line }}</div>
+                        </details>
+                        {% else %}
+                        <span class="text-muted">{{ row.parameter_line }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        {% if row.dataset_hue is None %}
+                        <span class="dataset-badge unrecorded"
+                              title="評価データの版が記録される前の実験です。版が特定できないため、他の実験と比較できません">{{ row.dataset_label }}</span>
+                        {% else %}
+                        <span class="dataset-badge" style="background-color: hsl({{ row.dataset_hue }}, 70%, 88%);"
+                              title="{{ row.experiment.dataset_path }}">{{ row.dataset_label }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        {% if row.has_details %}
+                        <span class="text-success" title="明細ファイルがあります">✓</span>
+                        {% else %}
+                        <span class="badge bg-secondary"
+                              title="明細ファイルがありません。この実験を含む比較では、問題単位の勝敗が出せません">なし</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        <input type="checkbox" class="exp-check" value="{{ row.experiment.id }}"
+                               aria-label="実験 {{ row.experiment.id }} を選択">
+                    </td>
+                </tr>
+                {% if row.warnings %}
+                <tr class="table-danger">
+                    <td></td>
+                    <td colspan="11" class="text-small fw-bold">
+                        {% for warning in row.warnings %}
+                        <div>⚠ {{ warning }}</div>
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-secondary shadow-sm">
+    実験がまだありません。実験は `services.run_experiment()` から実行します（この画面からは実行できません）。
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<div id="jsConfig" data-compare-url="{% url 'nl2sql_compare' %}" style="display:none;"></div>
+<script src="{% static 'nl2sql/list.js' %}"></script>
+{% endblock %}

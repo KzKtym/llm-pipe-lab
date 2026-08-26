@@ -1,0 +1,203 @@
+{% extends "nl2sql/base.html" %}
+
+{% block title %}実験 {{ experiment.id }} - NL→SQL 実験{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="m-0">実験 {{ experiment.id }}<span class="ms-3 fs-5 text-muted">{{ experiment.name|default:"(no title)" }}</span></h2>
+    <a href="{% url 'nl2sql_list' %}" class="btn btn-outline-secondary">一覧</a>
+</div>
+
+{% for warning in warnings %}
+<div class="alert alert-danger shadow-sm fw-bold">⚠ {{ warning }}</div>
+{% endfor %}
+
+{# ===== 1. サマリ ===== #}
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-white fw-bold">サマリ</div>
+    <div class="card-body">
+        <div class="row text-center">
+            <div class="col-md-3">
+                <div class="text-muted text-small">実行結果一致率</div>
+                <div class="metric-main text-primary">{{ experiment.execution_accuracy|stringformat:".4f" }}</div>
+                <div class="text-muted text-small">{{ experiment.correct }} / {{ experiment.scored }}</div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-muted text-small">実行成功率</div>
+                <div class="metric-sub">{{ experiment.valid_sql_rate|stringformat:".4f" }}</div>
+                <div class="text-muted text-small">{{ experiment.executed }} / {{ experiment.scored }}</div>
+            </div>
+            <div class="col-md-2">
+                <div class="text-muted text-small">採点対象</div>
+                <div class="metric-sub">{{ experiment.scored }}/{{ experiment.question_count }}</div>
+            </div>
+            <div class="col-md-2">
+                <div class="text-muted text-small">トークン</div>
+                <div class="metric-sub">{{ experiment.total_tokens }}</div>
+                <div class="text-muted text-small">入 {{ experiment.prompt_tokens }} / 出 {{ experiment.completion_tokens }}</div>
+            </div>
+            <div class="col-md-2">
+                <div class="text-muted text-small">所要</div>
+                <div class="metric-sub">{{ experiment.elapsed_sec }}秒</div>
+            </div>
+        </div>
+        <div class="text-small mt-3 pt-3 border-top">
+            <span class="text-muted">評価データ</span>
+            {% if dataset_hue is None %}
+            <span class="dataset-badge unrecorded ms-1"
+                  title="評価データの版が記録される前の実験です">{{ dataset_label }}</span>
+            {% else %}
+            <span class="dataset-badge ms-1" style="background-color: hsl({{ dataset_hue }}, 70%, 88%);">{{ dataset_label }}</span>
+            {% endif %}
+            <span class="text-muted ms-2">{{ experiment.dataset_path|default:"(記録なし)" }}</span>
+        </div>
+        <div class="text-muted text-small mt-2">
+            {{ experiment.created_at|date:"Y/m/d H:i" }} ／ {{ parameter_line }}
+        </div>
+    </div>
+</div>
+
+{# ===== 2. パラメータ ===== #}
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-white fw-bold">パラメータ</div>
+    <div class="table-responsive">
+        <table class="table table-sm align-middle m-0">
+            <tbody>
+                {% for row in parameter_rows %}
+                <tr>
+                    <th style="width: 240px;" class="table-light">{{ row.key }}</th>
+                    <td>{{ row.value }}</td>
+                </tr>
+                {% empty %}
+                <tr><td class="text-muted">記録がありません</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{# ===== 3. タグ別の正答率 ===== #}
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-white fw-bold">
+        タグ別の正答率<span class="ms-2 text-muted text-small fw-normal">正答率の低い順（弱点が上）</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-sm align-middle m-0">
+            <tbody>
+                {% for row in tag_rows %}
+                <tr>
+                    <th style="width: 180px;" class="fw-normal">{{ row.tag }}</th>
+                    <td>
+                        <div class="tag-bar-track">
+                            <div class="tag-bar-fill {{ row.band }}" style="width: {{ row.percent }}%;"></div>
+                        </div>
+                    </td>
+                    <td class="tag-bar-value" style="width: 160px;">
+                        <span class="fw-bold">{{ row.accuracy|floatformat:2 }}</span>
+                        <span class="text-muted">({{ row.correct }}/{{ row.total }})</span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td class="text-muted">タグ別の記録がありません</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{# ===== 4. 失敗の内訳 ===== #}
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-white fw-bold">失敗の内訳</div>
+    <div class="table-responsive">
+        <table class="table table-sm align-middle m-0">
+            <thead class="table-light">
+                <tr><th>種別</th><th style="width: 120px;">件数</th></tr>
+            </thead>
+            <tbody>
+                {% for row in error_rows %}
+                <tr><td>{{ row.kind }}</td><td>{{ row.count }}</td></tr>
+                {% empty %}
+                <tr><td colspan="2" class="text-muted">失敗はありません</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{# ===== 5. 明細 ===== #}
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-white fw-bold">明細</div>
+    {% if details_missing %}
+    <div class="card-body">
+        <div class="alert alert-warning m-0">
+            明細ファイルがありません（別の環境で実行された実験の可能性があります）。サマリのみ表示しています。
+        </div>
+    </div>
+    {% else %}
+    <div class="table-responsive">
+        <table class="table table-sm align-middle m-0">
+            <thead class="table-light">
+                <tr>
+                    <th style="width: 70px;">ID</th>
+                    <th>質問</th>
+                    <th style="width: 140px;">タグ</th>
+                    <th style="width: 60px;">判定</th>
+                    <th style="width: 170px;">理由</th>
+                    <th style="width: 50px;">試行</th>
+                    <th style="width: 220px;">エラー</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in item_rows %}
+                <tr class="{{ item.row_class }}">
+                    <td class="text-small">{{ item.id }}</td>
+                    <td>
+                        {{ item.question }}
+                        <details class="mt-1">
+                            <summary class="text-small text-muted" style="cursor:pointer;">SQL</summary>
+                            <div class="mt-1">
+                                <div class="text-small text-muted">生成SQL</div>
+                                <pre class="sql-block">{{ item.generated_sql|default:"(生成なし)" }}</pre>
+                                {% if item.gold_sql %}
+                                <div class="text-small text-muted mt-2">正解SQL<span class="ms-1">（実験時点の明細より）</span></div>
+                                <pre class="sql-block">{{ item.gold_sql }}</pre>
+                                {% endif %}
+                                {% if item.note %}
+                                <div class="text-small text-muted mt-2">メモ: {{ item.note }}</div>
+                                {% endif %}
+                            </div>
+                        </details>
+                    </td>
+                    <td class="text-small">{{ item.tag_text }}</td>
+                    <td class="text-center fw-bold">{{ item.verdict }}</td>
+                    <td class="text-small">{{ item.reason }}</td>
+                    <td class="text-center">{{ item.attempts }}</td>
+                    <td class="text-small">
+                        {% if item.error_kind %}<span class="badge bg-secondary">{{ item.error_kind }}</span>{% endif %}
+                        {{ item.error }}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="text-muted">明細は空です</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</div>
+
+{# ===== 6. スキーマ説明と代表プロンプト（既定は閉じる） ===== #}
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+        <details>
+            <summary class="fw-bold" style="cursor:pointer;">スキーマ説明（schema_snapshot）</summary>
+            <pre class="snapshot-block mt-2">{{ experiment.schema_snapshot|default:"(記録なし)" }}</pre>
+        </details>
+        <hr>
+        <details>
+            <summary class="fw-bold" style="cursor:pointer;">代表プロンプト（prompt_sample）</summary>
+            <pre class="snapshot-block mt-2">{{ experiment.prompt_sample|default:"(記録なし)" }}</pre>
+        </details>
+    </div>
+</div>
+{% endblock %}

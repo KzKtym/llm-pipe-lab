@@ -1,0 +1,200 @@
+[
+  {
+    "id": "s801",
+    "question": "店舗形態別の売上合計を知りたい。",
+    "unique": false,
+    "types": [2],
+    "basis": "「店舗形態別の売上合計」だが、閉店済み店舗（close_date ありが3件、うち上大岡店は期間内に1,351取引あり）の売上を含めるかを引用できる語が無い（型2）。",
+    "group_by": "store_type",
+    "tables": ["sales", "stores"]
+  },
+  {
+    "id": "s802",
+    "question": "2025年の月別の売上合計を出して。",
+    "unique": true,
+    "types": [],
+    "basis": "「2025年の」で期間、「月別」で軸、「売上合計」で total_amount 合計が確定。2025年は全12か月に取引があり（12か月）、店舗・チャネル・会員の絞り込み語が無く、当てる前提が無い。",
+    "group_by": "sold_at の月",
+    "tables": ["sales"]
+  },
+  {
+    "id": "s803",
+    "question": "会員ランク別の会員数を出して。",
+    "unique": false,
+    "types": [2],
+    "basis": "「会員ランク別の会員数」だが、is_active=false（退会・休眠）が2,924件あり、これを数に含めるかを引用できる語が無い（型2）。member_rank は3区分でNULL 0件・表記ゆれ無し。",
+    "group_by": "member_rank",
+    "tables": ["members"]
+  },
+  {
+    "id": "s804",
+    "question": "現在有効な会員は何人いる？",
+    "unique": true,
+    "types": [],
+    "basis": "「現在有効な会員」が is_active=true を引用で指定している（is_active は NULL 0件、true が17,076件）。地域・性別等での集約が無く当てる前提が無い。",
+    "group_by": null,
+    "tables": ["members"]
+  },
+  {
+    "id": "s805",
+    "question": "地域別の店舗数を教えて。",
+    "unique": false,
+    "types": [2, 3],
+    "basis": "「地域別の店舗数」。region に「関西」4件・「近畿」4件の表記ゆれが両方あり、集約するかを引用できず未確定（型3）。閉店済み店舗3件を数に含めるかを引用できる語も無い（型2）。",
+    "group_by": "region",
+    "tables": ["stores"]
+  },
+  {
+    "id": "s806",
+    "question": "販売チャネルごとの取引件数は？",
+    "unique": false,
+    "types": [3],
+    "basis": "「販売チャネルごとの取引件数」。channel は「EC」8,096件・「オンライン」7,985件が同義の表記ゆれで、集約するかを引用できる語が無い（型3）。",
+    "group_by": "channel",
+    "tables": ["sales"]
+  },
+  {
+    "id": "s807",
+    "question": "商品大分類別の売上金額を出して。",
+    "unique": false,
+    "types": [2],
+    "basis": "「商品大分類別の売上金額」。廃番商品（is_discontinued=true が48件）の売上を含めるかを引用できる語が無い（型2）。category_l は6区分でNULL 0件。",
+    "group_by": "category_l",
+    "tables": ["sale_items", "products"]
+  },
+  {
+    "id": "s808",
+    "question": "2026年1月の日別の売上推移を見たい。",
+    "unique": true,
+    "types": [],
+    "basis": "「2026年1月」で期間、「日別」で軸が確定。2026年1月は全31日に取引があり（31日）、店舗・区分の絞り込み語が無く当てる前提が無い。",
+    "group_by": "sold_at の日",
+    "tables": ["sales"]
+  },
+  {
+    "id": "s809",
+    "question": "店舗別の売上ランキング上位10店舗は？",
+    "unique": false,
+    "types": [2],
+    "basis": "「店舗別の売上ランキング上位10店舗」。閉店済み店舗（上大岡店は期間内に1,351取引、close_date ありが計3件）をランキングに含めるかを引用できる語が無い（型2）。",
+    "group_by": "store_id",
+    "tables": ["sales", "stores"]
+  },
+  {
+    "id": "s810",
+    "question": "性別ごとの会員数を知りたい。",
+    "unique": false,
+    "types": [4],
+    "basis": "「性別ごとの会員数」。gender は「その他」537件に加え未登録（NULL）が6,008件あり、未登録の扱いを引用できず未確定（型4）。",
+    "group_by": "gender",
+    "tables": ["members"]
+  },
+  {
+    "id": "s811",
+    "question": "会員の居住都道府県別の会員数は？",
+    "unique": false,
+    "types": [4],
+    "basis": "「都道府県別の会員数」。members.pref には包括値「その他」が1,048件あり、これを個別県と別に扱うか未確定（型4）。members.pref は NULL 0件。",
+    "group_by": "pref",
+    "tables": ["members"]
+  },
+  {
+    "id": "s812",
+    "question": "支払方法別の取引金額の合計を出して。",
+    "unique": true,
+    "types": [],
+    "basis": "「支払方法別の取引金額合計」。payment_method は4区分（現金・クレジット・電子マネー・QR）でNULL 0件・表記ゆれ無し。店舗属性や商品の絞り込み語が無く、当てる前提が無い。",
+    "group_by": "payment_method",
+    "tables": ["sales"]
+  },
+  {
+    "id": "s813",
+    "question": "廃番になっていない商品は何点ある？",
+    "unique": true,
+    "types": [],
+    "basis": "「廃番になっていない商品」が is_discontinued=false を引用で指定している（is_discontinued=true は48件）。集約が無く当てる前提が無い。",
+    "group_by": null,
+    "tables": ["products"]
+  },
+  {
+    "id": "s814",
+    "question": "2024年8月から2026年8月までの全社の総売上は？",
+    "unique": true,
+    "types": [],
+    "basis": "「2024年8月から2026年8月まで」はデータ全域（sold_at は 2024-08-15〜2026-08-14）を含み、「総売上」で全取引の total_amount 合計が確定。店舗・区分の絞り込み語が無く当てる前提が無い。",
+    "group_by": null,
+    "tables": ["sales"]
+  },
+  {
+    "id": "s815",
+    "question": "関西エリアの店舗の売上合計を出して。",
+    "unique": false,
+    "types": [3],
+    "basis": "「関西エリアの店舗」。region は「関西」4件のほか同義の「近畿」4件があり、「関西」に近畿表記の店舗を含めるかを引用できず未確定（型3）。",
+    "group_by": null,
+    "tables": ["sales", "stores"]
+  },
+  {
+    "id": "s816",
+    "question": "会員ランク別の平均購入金額（1取引あたり）を出して。",
+    "unique": false,
+    "types": [2],
+    "basis": "「会員ランク別の平均購入金額」。集計に入る会員のうち is_active=false（退会・休眠）が2,924件おり、その取引を含めるかを引用できる語が無い（型2）。",
+    "group_by": "member_rank",
+    "tables": ["sales", "members"]
+  },
+  {
+    "id": "s817",
+    "question": "月別・チャネル別の売上金額を出して。",
+    "unique": false,
+    "types": [3],
+    "basis": "「月別・チャネル別の売上金額」。channel は「EC」8,096件・「オンライン」7,985件が同義の表記ゆれで、集約するかを引用できる語が無い（型3）。",
+    "group_by": "sold_at の月, channel",
+    "tables": ["sales"]
+  },
+  {
+    "id": "s818",
+    "question": "商品中分類別の平均販売単価は？",
+    "unique": false,
+    "types": [2],
+    "basis": "「商品中分類別の平均販売単価」。廃番商品（is_discontinued=true が48件）を平均の対象に含めるかを引用できる語が無い（型2）。category_m は20区分でNULL 0件。",
+    "group_by": "category_m",
+    "tables": ["sale_items", "products"]
+  },
+  {
+    "id": "s819",
+    "question": "最も売上が多かった日はいつ？",
+    "unique": true,
+    "types": [],
+    "basis": "「最も売上が多かった日」。日別に total_amount 合計を取り最大の日を返すだけで、店舗・区分の絞り込み語が無く当てる前提が無い。",
+    "group_by": null,
+    "tables": ["sales"]
+  },
+  {
+    "id": "s820",
+    "question": "有効な会員の会員ランク別の構成比を出して。",
+    "unique": true,
+    "types": [],
+    "basis": "「有効な会員」が is_active=true を引用で指定し、member_rank は NULL 0件・3区分で表記ゆれ無し。母集合が確定しており当てる前提が無い。",
+    "group_by": "member_rank",
+    "tables": ["members"]
+  },
+  {
+    "id": "s821",
+    "question": "性別が未登録の会員は何人いる？",
+    "unique": true,
+    "types": [],
+    "basis": "「性別が未登録の会員」が gender IS NULL を引用で指定している（未登録は6,008件）。集約が無く当てる前提が無い。",
+    "group_by": null,
+    "tables": ["members"]
+  },
+  {
+    "id": "s822",
+    "question": "店舗の売場面積の平均は？",
+    "unique": false,
+    "types": [2],
+    "basis": "「店舗の売場面積の平均」。閉店済み店舗（close_date ありが3件）を平均の母集合に含めるかを引用できる語が無い（型2）。（floor_area は未計測NULLが8件）。",
+    "group_by": null,
+    "tables": ["stores"]
+  }
+]

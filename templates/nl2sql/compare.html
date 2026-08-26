@@ -1,0 +1,254 @@
+{% extends "nl2sql/base.html" %}
+
+{% block title %}比較 {{ exp_a.id }} vs {{ exp_b.id }} - NL→SQL 実験{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="m-0">比較 <span class="text-primary">A: {{ exp_a.id }}</span> vs <span class="text-info">B: {{ exp_b.id }}</span></h2>
+    <a href="{% url 'nl2sql_list' %}" class="btn btn-outline-secondary">一覧</a>
+</div>
+
+{% if dataset_warning %}
+{# スコア差分より前に置く。差を読んでから注意書きに気付いても遅い #}
+<div class="alert alert-danger shadow-sm fw-bold">⚠ {{ dataset_warning }}</div>
+{% endif %}
+
+<div class="row mb-3">
+    <div class="col-md-6">
+        <div class="card border-primary h-100">
+            <div class="card-body py-2">
+                <div class="fw-bold">A ／ <a href="{% url 'nl2sql_detail' exp_a.id %}">ID {{ exp_a.id }}</a> {{ exp_a.name|default:"(no title)" }}</div>
+                <div class="text-small mb-1">
+                    <span class="text-muted">評価データ</span>
+                    {% if dataset_hue_a is None %}
+                    <span class="dataset-badge unrecorded">{{ dataset_label_a }}</span>
+                    {% else %}
+                    <span class="dataset-badge" style="background-color: hsl({{ dataset_hue_a }}, 70%, 88%);">{{ dataset_label_a }}</span>
+                    {% endif %}
+                </div>
+                <div class="text-muted text-small">{{ parameter_line_a }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card border-info h-100">
+            <div class="card-body py-2">
+                <div class="fw-bold">B ／ <a href="{% url 'nl2sql_detail' exp_b.id %}">ID {{ exp_b.id }}</a> {{ exp_b.name|default:"(no title)" }}</div>
+                <div class="text-small mb-1">
+                    <span class="text-muted">評価データ</span>
+                    {% if dataset_hue_b is None %}
+                    <span class="dataset-badge unrecorded">{{ dataset_label_b }}</span>
+                    {% else %}
+                    <span class="dataset-badge" style="background-color: hsl({{ dataset_hue_b }}, 70%, 88%);">{{ dataset_label_b }}</span>
+                    {% endif %}
+                </div>
+                <div class="text-muted text-small">{{ parameter_line_b }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% for warning in warnings_a %}
+<div class="alert alert-danger shadow-sm fw-bold">⚠ A（ID {{ exp_a.id }}）: {{ warning }}</div>
+{% endfor %}
+{% for warning in warnings_b %}
+<div class="alert alert-danger shadow-sm fw-bold">⚠ B（ID {{ exp_b.id }}）: {{ warning }}</div>
+{% endfor %}
+
+{# ===== 1. スコア差分 ===== #}
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-white fw-bold">スコア差分</div>
+    <div class="table-responsive">
+        <table class="table align-middle m-0">
+            <thead class="table-secondary">
+                <tr>
+                    <th style="width: 180px;">項目</th>
+                    <th style="width: 140px;">A: {{ exp_a.id }}</th>
+                    <th style="width: 140px;">B: {{ exp_b.id }}</th>
+                    <th style="width: 140px;">差</th>
+                    <th>推移</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in score_rows %}
+                <tr>
+                    <td class="fw-bold">{{ row.label }}</td>
+                    <td>{{ row.a }}</td>
+                    <td>{{ row.b }}</td>
+                    <td {% if row.tone %}class="tone-{{ row.tone }}"{% endif %}>{{ row.diff }}</td>
+                    <td class="text-muted text-small">{{ row.text }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{# ===== 2. パラメータ差分 ===== #}
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-white fw-bold">
+        パラメータ差分<span class="ms-2 text-muted text-small fw-normal">値が異なる行をハイライト</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-sm align-middle m-0">
+            <thead class="table-secondary">
+                <tr>
+                    <th style="width: 240px;">項目</th>
+                    <th>A: {{ exp_a.id }}</th>
+                    <th>B: {{ exp_b.id }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in parameter_rows %}
+                <tr {% if row.is_diff %}class="param-diff"{% endif %}>
+                    <td class="fw-bold">{{ row.key }}</td>
+                    <td>{{ row.a }}</td>
+                    <td>{{ row.b }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="3" class="text-muted">パラメータの記録がありません</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{# ===== 3. タグ別差分 ===== #}
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-white fw-bold">
+        タグ別差分<span class="ms-2 text-muted text-small fw-normal">差の大きい順</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-sm align-middle m-0">
+            <thead class="table-secondary">
+                <tr>
+                    <th style="width: 150px;">タグ</th>
+                    <th colspan="2">A: {{ exp_a.id }}</th>
+                    <th colspan="2">B: {{ exp_b.id }}</th>
+                    <th style="width: 110px;">差</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in tag_rows %}
+                <tr>
+                    <td>{{ row.tag }}</td>
+                    <td>
+                        {% if row.a_percent is None %}
+                        <div class="tag-bar-absent">このタグはデータなし</div>
+                        {% else %}
+                        <div class="tag-bar-track">
+                            <div class="tag-bar-fill side-a" style="width: {{ row.a_percent }}%;"></div>
+                        </div>
+                        {% endif %}
+                    </td>
+                    <td class="tag-bar-value">
+                        {% if row.a_accuracy is None %}—{% else %}
+                        {{ row.a_accuracy|floatformat:2 }}
+                        <span class="text-muted">({{ row.a.correct }}/{{ row.a.total }})</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if row.b_percent is None %}
+                        <div class="tag-bar-absent">このタグはデータなし</div>
+                        {% else %}
+                        <div class="tag-bar-track">
+                            <div class="tag-bar-fill side-b" style="width: {{ row.b_percent }}%;"></div>
+                        </div>
+                        {% endif %}
+                    </td>
+                    <td class="tag-bar-value">
+                        {% if row.b_accuracy is None %}—{% else %}
+                        {{ row.b_accuracy|floatformat:2 }}
+                        <span class="text-muted">({{ row.b.correct }}/{{ row.b.total }})</span>
+                        {% endif %}
+                    </td>
+                    <td class="tag-bar-value {% if row.tone %}tone-{{ row.tone }}{% endif %}">{{ row.diff_text }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="text-muted">タグ別の記録がありません</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{# ===== 4. 問題単位の勝敗 ===== #}
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-white fw-bold">
+        問題単位の勝敗<span class="ms-2 text-muted text-small fw-normal">片方だけ正解した問題が、パラメータを変えた効果そのもの</span>
+    </div>
+
+    {% if details_missing %}
+    <div class="card-body">
+        <div class="alert alert-warning m-0">
+            明細ファイルが無いため比較できません（{{ details_missing_labels|join:" / " }}）。
+        </div>
+    </div>
+    {% else %}
+    <div class="card-body pb-0">
+        <div class="d-flex flex-wrap gap-2 mb-3">
+            {% for group in group_rows %}
+            <span class="badge {% if group.highlight %}bg-primary{% else %}bg-secondary{% endif %} fs-6">
+                {{ group.label }}: {{ group.count }}
+            </span>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% for group in group_rows %}
+    <div class="px-3 pb-3">
+        <h5 class="border-bottom pb-1 {% if group.highlight %}fw-bold{% else %}text-muted{% endif %}">
+            {{ group.label }}<span class="ms-2">{{ group.count }}件</span>
+        </h5>
+        {% if group.entries %}
+        <div class="table-responsive">
+            <table class="table table-sm align-middle m-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 70px;">ID</th>
+                        <th>質問</th>
+                        <th style="width: 140px;">タグ</th>
+                        <th style="width: 200px;">理由（A / B）</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in group.entries %}
+                    <tr {% if group.row_class %}class="{{ group.row_class }}"{% endif %}>
+                        <td class="text-small">{{ entry.id }}</td>
+                        <td>
+                            {{ entry.question }}
+                            <details class="mt-1">
+                                <summary class="text-small text-muted" style="cursor:pointer;">両方の生成SQL</summary>
+                                <div class="row mt-1">
+                                    <div class="col-md-6">
+                                        <div class="text-small text-muted">A: {{ exp_a.id }}</div>
+                                        <pre class="sql-block">{{ entry.a.generated_sql|default:"(明細なし)" }}</pre>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="text-small text-muted">B: {{ exp_b.id }}</div>
+                                        <pre class="sql-block">{{ entry.b.generated_sql|default:"(明細なし)" }}</pre>
+                                    </div>
+                                </div>
+                                {% if entry.a.gold_sql %}
+                                <div class="text-small text-muted mt-2">正解SQL<span class="ms-1">（A の明細より）</span></div>
+                                <pre class="sql-block">{{ entry.a.gold_sql }}</pre>
+                                {% endif %}
+                            </details>
+                        </td>
+                        <td class="text-small">{{ entry.tag_text }}</td>
+                        <td class="text-small">
+                            {{ entry.a.reason|default:"—" }} / {{ entry.b.reason|default:"—" }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-muted text-small">該当なし</div>
+        {% endif %}
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends "nl2sql/base.html" %}
+
+{% block title %}段階2の振る舞い - NL→SQL 実験{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+        <h2 class="m-0">段階2の振る舞い</h2>
+        <div class="text-muted mt-2">
+            答えを返したうえで、当てた前提と、それを変える手段を示す。黙って解釈しない。
+        </div>
+    </div>
+    <a href="{% url 'nl2sql_list' %}" class="btn btn-outline-secondary">実験一覧</a>
+</div>
+
+{% if experiment %}
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body py-2 d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+            <span class="fw-bold">ID {{ experiment.id }}</span>
+            <span class="ms-2">{{ experiment.name|default:"(no title)" }}</span>
+            <span class="ms-2 text-muted text-small">{{ experiment.created_at|date:"Y/m/d H:i" }}</span>
+        </div>
+        <div class="text-small">
+            {% if show_all %}
+            <span class="text-muted">{{ total_count }}問すべて</span>
+            <a class="ms-2" href="?">出そろうまでに戻す</a>
+            {% else %}
+            <span class="text-muted">{{ shown_count }} / {{ total_count }}問</span>
+            <a class="ms-2" href="?all=1">すべて見る</a>
+            {% endif %}
+        </div>
+    </div>
+    {% if experiments|length > 1 %}
+    <div class="card-body py-2 pt-0 text-small text-muted">
+        他の実験:
+        {% for other in experiments %}
+        {% if other.id == experiment.id %}
+        <span class="ms-1 fw-bold">{{ other.id }}</span>
+        {% else %}
+        <a class="ms-1" href="{% url 'nl2sql_stage2_experiment' other.id %}">{{ other.id }}</a>
+        {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+
+{% if details_missing %}
+<div class="alert alert-warning shadow-sm">
+    明細ファイルがありません（別の環境で実行された実験の可能性があります）。
+</div>
+{% endif %}
+
+{% for row in rows %}
+<div class="card shadow-sm border-0 mb-3">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start gap-3">
+            <div class="stage2-question">{{ row.question }}</div>
+            <span class="badge stage2-kind {{ row.kind }}">{{ row.kind_label }}</span>
+        </div>
+
+        {% if row.has_disclosure %}
+        {% comment %}
+        disclosure_text は保存された文字列そのまま。改行は CSS(pre-wrap)で見せるだけで、
+        テンプレート側では分割も整形もしない（issue_v005）
+        {% endcomment %}
+        <div class="stage2-disclosure mt-3">{{ row.disclosure_text }}</div>
+        {% else %}
+        <div class="stage2-disclosure empty mt-3">補った前提はありません</div>
+        {% endif %}
+    </div>
+</div>
+{% empty %}
+<div class="alert alert-secondary shadow-sm">この実験には表示できる問いがありません。</div>
+{% endfor %}
+
+{% else %}
+<div class="alert alert-secondary shadow-sm">
+    段階2（ルール判定）の実験がまだありません。この画面は閲覧専用で、実験の実行はサーバ側で行います。
+</div>
+{% endif %}
+{% endblock %}

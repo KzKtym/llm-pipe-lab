@@ -1,0 +1,804 @@
+[
+  {
+    "source": "evaluation_questions.json",
+    "id": "q001",
+    "question": "店舗は全部で何店舗ある？",
+    "unique": false,
+    "basis": "引用できる語が無い。閉店した店舗(close_date)を数に含めるかを質問文が決めていない（型2）",
+    "types": [
+      2
+    ],
+    "axes": [],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q002",
+    "question": "今も営業している店舗は何店舗ある？",
+    "unique": true,
+    "basis": "「今も営業している」→ 閉店した店舗(close_date)を除くと質問文が言っている",
+    "types": [],
+    "axes": [],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q003",
+    "question": "会員数を会員ランク別に多い順で教えて",
+    "unique": false,
+    "basis": "引用できる語が無い。退会・休眠(is_active=false)の会員を含めるかを質問文が決めていない（型2）",
+    "types": [
+      2
+    ],
+    "axes": [
+      "会員ランク"
+    ],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q004",
+    "question": "支払方法ごとの取引件数は？",
+    "unique": true,
+    "basis": "「支払方法ごとの取引件数」→ 母集合は sales の全取引、payment_method は区分値。結合欠落・フラグ・同義値のいずれも無い",
+    "types": [],
+    "axes": [
+      "支払方法"
+    ],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q005",
+    "question": "2026年7月の総売上（税抜）はいくら？",
+    "unique": true,
+    "basis": "「2026年7月」→ 母集合は7月の取引に確定。sales にフラグ・同義値・結合欠落なし（単一値）",
+    "types": [],
+    "axes": [],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q006",
+    "question": "商品は大分類ごとに何件ある？",
+    "unique": false,
+    "basis": "引用できる語が無い。廃番(is_discontinued)の商品を含めるかを質問文が決めていない（型2）",
+    "types": [
+      2
+    ],
+    "axes": [
+      "商品大分類"
+    ],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q007",
+    "question": "電子マネーで支払われた取引は何件？",
+    "unique": true,
+    "basis": "「電子マネーで支払われた取引」→ 母集合は電子マネーの取引に確定。sales 単体でフラグ・同義値なし（単一値）",
+    "types": [],
+    "axes": [],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q008",
+    "question": "廃番になっていない商品は何件？",
+    "unique": true,
+    "basis": "「廃番になっていない商品」→ 廃番(is_discontinued=true)を除くと質問文が言っている",
+    "types": [],
+    "axes": [],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q009",
+    "question": "会員の男女別の人数は？",
+    "unique": false,
+    "basis": "引用できる語が無い。退会・休眠(is_active)の会員を含めるかを質問文が決めていない（型2）",
+    "types": [
+      2
+    ],
+    "axes": [
+      "性別"
+    ],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q010",
+    "question": "店舗形態（路面・SC内・駅ナカ）ごとの店舗数は？",
+    "unique": false,
+    "basis": "引用できる語が無い。閉店(close_date)の店舗を含めるかを質問文が決めていない（型2）",
+    "types": [
+      2
+    ],
+    "axes": [
+      "店舗形態"
+    ],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q011",
+    "question": "2026年7月の売上を店舗名ごとに多い順で教えて",
+    "unique": false,
+    "basis": "引用できる語が無い。7月に売上が無い店舗をゼロ行として並べるかを質問文が決めていない（型1）",
+    "types": [
+      1
+    ],
+    "axes": [
+      "店舗名"
+    ],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q012",
+    "question": "ネット通販（EC）の売上は全体の何％か、小数第1位まで求めて",
+    "unique": false,
+    "basis": "引用できる語が無い。「EC」表記だけか同義の「オンライン」表記も含めるかを質問文が決めていない（型3）",
+    "types": [
+      3
+    ],
+    "axes": [],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q013",
+    "question": "関西エリアの店舗は何店舗ある？",
+    "unique": false,
+    "basis": "引用できる語が無い。同義の「近畿」を含めるか（型3）、閉店(close_date)店舗を含めるか（型2）を質問文が決めていない",
+    "types": [
+      2,
+      3
+    ],
+    "axes": [],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q014",
+    "question": "取引を「会員」「非会員」に区分して、それぞれの売上合計は？",
+    "unique": true,
+    "basis": "「取引を『会員』『非会員』に区分」→ sales.member_id の有無で2群に分ける。両群は必ず存在し、sales にフラグ・同義値・結合欠落なし",
+    "types": [],
+    "axes": [
+      "会員/非会員"
+    ],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q015",
+    "question": "商品大分類ごとの売上金額を多い順に",
+    "unique": false,
+    "basis": "引用できる語が無い。廃番(is_discontinued)商品の売上を含めるかを質問文が決めていない（型2）",
+    "types": [
+      2
+    ],
+    "axes": [
+      "商品大分類"
+    ],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q016",
+    "question": "取引件数が多い店舗トップ5を、店舗名と取引件数で教えて",
+    "unique": false,
+    "basis": "引用できる語が無い。閉店(close_date)店舗をランキング対象に含めるかを質問文が決めていない（型2）。トップ5で出力の顔ぶれ自体は指標で確定",
+    "types": [
+      2
+    ],
+    "axes": [
+      "店舗名"
+    ],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q017",
+    "question": "2026年上半期（1〜6月）の売上を月別（YYYY-MM）に見せて",
+    "unique": false,
+    "basis": "引用できる語が無い。売上の無い月をゼロ行として並べるかを質問文が決めていない（型1、時間軸）",
+    "types": [
+      1
+    ],
+    "axes": [
+      "月"
+    ],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q018",
+    "question": "店頭とネット通販（EC＋オンライン）で、取引1件あたりの平均売上（客単価）はどれくらい違う？1円未満は四捨五入して",
+    "unique": true,
+    "basis": "「店頭とネット通販（EC＋オンライン）」→ channel を2群に。「（EC＋オンライン）」で同義の EC/オンライン を合算と明示（型3解消）。sales の区分値でフラグ・結合欠落なし",
+    "types": [],
+    "axes": [
+      "チャネル区分(店頭/ネット通販)"
+    ],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q019",
+    "question": "会員ランク別の平均客単価は？1円未満は四捨五入して",
+    "unique": false,
+    "basis": "引用できる語が無い。退会・休眠(is_active)会員の取引を含めるかを質問文が決めていない（型2）",
+    "types": [
+      2
+    ],
+    "axes": [
+      "会員ランク"
+    ],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q020",
+    "question": "定価より安く売られた明細は、明細全体の何％か、件数ベースで小数第1位まで求めて",
+    "unique": false,
+    "basis": "引用できる語が無い。廃番(is_discontinued)商品の明細を含めるかを質問文が決めていない（型2）。「明細全体」は総称でフラグを確定しない",
+    "types": [
+      2
+    ],
+    "axes": [],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q021",
+    "question": "関西エリアの売上を店舗名ごとに多い順で教えて",
+    "unique": false,
+    "basis": "引用できる語が無い。売上の無い店舗をゼロ行として並べるか（型1）、同義の「近畿」を含めるか（型3）を質問文が決めていない",
+    "types": [
+      1,
+      3
+    ],
+    "axes": [
+      "店舗名"
+    ],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q022",
+    "question": "会員数が多い都道府県トップ10を、都道府県と会員数で教えて",
+    "unique": false,
+    "basis": "引用できる語が無い。退会・休眠(is_active)の会員を含めるかを質問文が決めていない（型2）",
+    "types": [
+      2
+    ],
+    "axes": [
+      "都道府県"
+    ],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q023",
+    "question": "生年月日が登録されている会員は、会員全体の何％か、小数第1位まで求めて",
+    "unique": false,
+    "basis": "引用できる語が無い。退会・休眠(is_active)の会員を分母に含めるかを質問文が決めていない（型2）。「会員全体」は総称でフラグを確定しない",
+    "types": [
+      2
+    ],
+    "axes": [],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q024",
+    "question": "非会員取引は全体の何％か、件数ベースで小数第1位まで求めて",
+    "unique": true,
+    "basis": "「全体」→ 分母は sales の全取引、「非会員」→ 分子は member_id が NULL の取引。sales にフラグ・同義値なし（単一値）",
+    "types": [],
+    "axes": [],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q025",
+    "question": "廃番商品を除いた、大分類ごとの売上金額は？",
+    "unique": true,
+    "basis": "「廃番商品を除いた」→ 廃番(is_discontinued=true)を除くと質問文が言っている。軸の大分類は区分値",
+    "types": [],
+    "axes": [
+      "商品大分類"
+    ],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q026",
+    "question": "2026年7月の売上は前年同月（2025年7月）と比べて何％増減したか、小数第1位まで求めて",
+    "unique": true,
+    "basis": "「2026年7月」「前年同月（2025年7月）」→ 両期間の母集合が確定。sales 単体でフラグ・同義値なし（単一値）",
+    "types": [],
+    "axes": [],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q027",
+    "question": "日次店舗サマリを使って、平均日商を店舗名ごとに高い順で、1円未満は四捨五入して出して",
+    "unique": false,
+    "basis": "引用できる語が無い。サマリ行の無い店舗をゼロ行として並べるかを質問文が決めていない（型1）",
+    "types": [
+      1
+    ],
+    "axes": [
+      "店舗名"
+    ],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q028",
+    "question": "2026年7月の平均日商を店舗名ごとに、取引が無かった日も含めて（1日=売上ゼロとして）、1円未満は四捨五入して出して",
+    "unique": false,
+    "basis": "引用できる語が無い。7月に取引の無い店舗をゼロ行として並べるかを質問文が決めていない（型1）。日の扱いは「取引が無かった日も含めて」で確定",
+    "types": [
+      1
+    ],
+    "axes": [
+      "店舗名"
+    ],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q029",
+    "question": "定価ベースの売上（数量×定価）と実売ベースの売上の差額は合計いくら？",
+    "unique": false,
+    "basis": "引用できる語が無い。廃番(is_discontinued)商品の明細を含めるかを質問文が決めていない（型2）",
+    "types": [
+      2
+    ],
+    "axes": [],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q030",
+    "question": "会員を年代で区分し、各年代の売上構成比は？年代は「20代」のように表記し、構成比は小数第1位まで求めて",
+    "unique": false,
+    "basis": "引用できる語が無い。退会・休眠(is_active)会員の取引を含めるかを質問文が決めていない（型2）",
+    "types": [
+      2
+    ],
+    "axes": [
+      "年代"
+    ],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q031",
+    "question": "2026年5月15日〜8月14日に最も売れた商品トップ10を、商品名と販売数量で教えて",
+    "unique": false,
+    "basis": "引用できる語が無い。廃番(is_discontinued)商品をランキング対象に含めるかを質問文が決めていない（型2）。トップ10で出力の顔ぶれ自体は指標で確定",
+    "types": [
+      2
+    ],
+    "axes": [
+      "商品名"
+    ],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q032",
+    "question": "店舗形態ごとの売場面積あたり売上（面積効率）を高い順に、小数第1位まで求めて",
+    "unique": false,
+    "basis": "引用できる語が無い。閉店(close_date)店舗を含めるかを質問文が決めていない（型2）",
+    "types": [
+      2
+    ],
+    "axes": [
+      "店舗形態"
+    ],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q033",
+    "question": "商品大分類ごとに、2026年上半期（1〜6月）と2025年同期の売上を並べて比較して",
+    "unique": false,
+    "basis": "引用できる語が無い。廃番(is_discontinued)商品の売上を含めるかを質問文が決めていない（型2）。期間は2026/2025上半期で確定",
+    "types": [
+      2
+    ],
+    "axes": [
+      "商品大分類"
+    ],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q034",
+    "question": "ゴールド会員の売上は全売上の何％を占めるか、小数第1位まで求めて",
+    "unique": false,
+    "basis": "引用できる語が無い。退会・休眠(is_active)のゴールド会員の売上を含めるかを質問文が決めていない（型2）",
+    "types": [
+      2
+    ],
+    "axes": [],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "evaluation_questions.json",
+    "id": "q035",
+    "question": "閉店した店舗について、店舗名と閉店日、閉店までの累計売上を教えて",
+    "unique": false,
+    "basis": "引用できる語が無い。取引実績の無い閉店店舗をゼロ行として並べるかを質問文が決めていない（型1）。閉店の定義は「閉店した店舗」で確定",
+    "types": [
+      1
+    ],
+    "axes": [
+      "店舗名(閉店店舗)"
+    ],
+    "prev_unique": null,
+    "changed": null
+  },
+  {
+    "source": "stage2_questions.json",
+    "id": "s001",
+    "question": "2026年7月の平均日商、取引の無かった日も0円としてカウントして、店舗名ごとに出して",
+    "unique": false,
+    "basis": "引用できる語が無い。7月に取引の無い店舗をゼロ行（平均0円）として並べるかを質問文が決めていない（型1）。日の扱いは「取引の無かった日も0円としてカウント」で確定",
+    "types": [
+      1
+    ],
+    "axes": [
+      "店舗名"
+    ],
+    "prev_unique": false,
+    "changed": false
+  },
+  {
+    "source": "stage2_questions.json",
+    "id": "s002",
+    "question": "閉店した店の、閉店までの累計売上ってどうなってる？店名と閉店日つきで",
+    "unique": false,
+    "basis": "引用できる語が無い。取引実績の無い閉店店舗をゼロ行として並べるかを質問文が決めていない（型1）",
+    "types": [
+      1
+    ],
+    "axes": [
+      "店舗名(閉店店舗)"
+    ],
+    "prev_unique": false,
+    "changed": false
+  },
+  {
+    "source": "stage2_questions.json",
+    "id": "s003",
+    "question": "廃番の商品も入れて、2026年8月14日に商品名ごとに何個売れたか教えて",
+    "unique": false,
+    "basis": "引用できる語が無い。その日に売れなかった商品をゼロ行（0個）として並べるかを質問文が決めていない（型1）。廃番の扱いは「廃番の商品も入れて」で確定",
+    "types": [
+      1
+    ],
+    "axes": [
+      "商品名"
+    ],
+    "prev_unique": false,
+    "changed": false
+  },
+  {
+    "source": "stage2_questions.json",
+    "id": "s004",
+    "question": "退会した人も入れて、会員ごとの購入回数、それぞれ何回?",
+    "unique": false,
+    "basis": "引用できる語が無い。購入していない会員をゼロ行（0回）として並べるかを質問文が決めていない（型1）。退会の扱いは「退会した人も入れて」で確定",
+    "types": [
+      1
+    ],
+    "axes": [
+      "会員"
+    ],
+    "prev_unique": false,
+    "changed": false
+  },
+  {
+    "source": "stage2_questions.json",
+    "id": "c001",
+    "question": "今ある店だけで、店舗形態別の店舗数、それぞれ何店",
+    "unique": true,
+    "basis": "「今ある店だけで」→ 閉店した店(close_date)を除くと質問文が言っている。軸の店舗形態は区分値",
+    "types": [],
+    "axes": [
+      "店舗形態"
+    ],
+    "prev_unique": true,
+    "changed": false
+  },
+  {
+    "source": "stage2_questions.json",
+    "id": "c003",
+    "question": "まだ閉店してない店、今いくつある？",
+    "unique": true,
+    "basis": "「まだ閉店してない店」→ 閉店した店(close_date)を除くと質問文が言っている（単一値）",
+    "types": [],
+    "axes": [],
+    "prev_unique": true,
+    "changed": false
+  },
+  {
+    "source": "stage2_questions.json",
+    "id": "c004",
+    "question": "廃番抜きで、商品、大分類ごとに何件ずつ",
+    "unique": true,
+    "basis": "「廃番抜きで」→ 廃番(is_discontinued)商品を除くと質問文が言っている。軸の大分類は区分値",
+    "types": [],
+    "axes": [
+      "商品大分類"
+    ],
+    "prev_unique": true,
+    "changed": false
+  },
+  {
+    "source": "stage2_questions.json",
+    "id": "c005",
+    "question": "2026年7月って、ぜんぶでいくら売れた？税抜で",
+    "unique": true,
+    "basis": "「2026年7月」→ 母集合は7月の取引に確定。sales にフラグ・同義値なし（単一値）",
+    "types": [],
+    "axes": [],
+    "prev_unique": true,
+    "changed": false
+  },
+  {
+    "source": "stage2_questions.json",
+    "id": "c006",
+    "question": "現役の（廃番じゃない）商品、何個ある？",
+    "unique": true,
+    "basis": "「現役の（廃番じゃない）」→ 廃番(is_discontinued)商品を除くと質問文が言っている（単一値）",
+    "types": [],
+    "axes": [],
+    "prev_unique": true,
+    "changed": false
+  },
+  {
+    "source": "stage2_questions.json",
+    "id": "c008",
+    "question": "非会員の取引って、全体のどれくらい？件数ベースで小数第1位まで",
+    "unique": true,
+    "basis": "「全体」→ 分母は sales の全取引、「非会員」→ 分子は member_id が NULL。sales にフラグ・同義値なし（単一値）",
+    "types": [],
+    "axes": [],
+    "prev_unique": true,
+    "changed": false
+  },
+  {
+    "source": "rule_validation_questions.json",
+    "id": "r001",
+    "question": "直近1年の売上金額を月別に集計して。全社の合計でいい。",
+    "unique": false,
+    "basis": "引用できる語が無い。売上の無い月をゼロ行として並べるかを質問文が決めていない（型1、時間軸）",
+    "types": [
+      1
+    ],
+    "axes": [
+      "月"
+    ],
+    "prev_unique": true,
+    "changed": true
+  },
+  {
+    "source": "rule_validation_questions.json",
+    "id": "r002",
+    "question": "2025年の売上推移を、店舗別かつ月別で見たい。",
+    "unique": false,
+    "basis": "引用できる語が無い。売上の無い店舗・月をゼロ行として並べるかを質問文が決めていない（型1）",
+    "types": [
+      1
+    ],
+    "axes": [
+      "店舗",
+      "月"
+    ],
+    "prev_unique": true,
+    "changed": true
+  },
+  {
+    "source": "rule_validation_questions.json",
+    "id": "r003",
+    "question": "店舗別の売上をランキングにして、大きい順に並べて。",
+    "unique": false,
+    "basis": "引用できる語が無い。売上の無い店舗をゼロ行として並べるかを質問文が決めていない（型1）",
+    "types": [
+      1
+    ],
+    "axes": [
+      "店舗"
+    ],
+    "prev_unique": false,
+    "changed": false
+  },
+  {
+    "source": "rule_validation_questions.json",
+    "id": "r004",
+    "question": "有効な会員だけで、会員ランク別の人数を出して。",
+    "unique": true,
+    "basis": "「有効な会員だけで」→ 退会・休眠(is_active=false)を除くと質問文が言っている。軸の会員ランクは区分値",
+    "types": [],
+    "axes": [
+      "会員ランク"
+    ],
+    "prev_unique": true,
+    "changed": false
+  },
+  {
+    "source": "rule_validation_questions.json",
+    "id": "r005",
+    "question": "今営業している店舗は何店舗ある？",
+    "unique": true,
+    "basis": "「今営業している店舗」→ 閉店(close_date)店舗を除くと質問文が言っている（単一値）",
+    "types": [],
+    "axes": [],
+    "prev_unique": true,
+    "changed": false
+  },
+  {
+    "source": "rule_validation_questions.json",
+    "id": "r006",
+    "question": "うちの店舗は全部でいくつある？",
+    "unique": false,
+    "basis": "引用できる語が無い。閉店(close_date)店舗を数に含めるかを質問文が決めていない（型2）",
+    "types": [
+      2
+    ],
+    "axes": [],
+    "prev_unique": false,
+    "changed": false
+  },
+  {
+    "source": "rule_validation_questions.json",
+    "id": "r007",
+    "question": "商品大分類ごとの売上構成比を教えて。",
+    "unique": false,
+    "basis": "引用できる語が無い。廃番(is_discontinued)商品の売上を含めるかを質問文が決めていない（型2）",
+    "types": [
+      2
+    ],
+    "axes": [
+      "商品大分類"
+    ],
+    "prev_unique": false,
+    "changed": false
+  },
+  {
+    "source": "rule_validation_questions.json",
+    "id": "r008",
+    "question": "廃番になった商品は何点ある？",
+    "unique": true,
+    "basis": "「廃番になった商品」→ 廃番(is_discontinued=true)に母集合を限定すると質問文が言っている（単一値）",
+    "types": [],
+    "axes": [],
+    "prev_unique": true,
+    "changed": false
+  },
+  {
+    "source": "rule_validation_questions.json",
+    "id": "r009",
+    "question": "会員の都道府県別の人数を出して。",
+    "unique": false,
+    "basis": "引用できる語が無い。退会・休眠(is_active)の会員を含めるかを質問文が決めていない（型2）",
+    "types": [
+      2
+    ],
+    "axes": [
+      "都道府県"
+    ],
+    "prev_unique": false,
+    "changed": false
+  },
+  {
+    "source": "rule_validation_questions.json",
+    "id": "r010",
+    "question": "現金払いの取引金額の合計はいくら？",
+    "unique": true,
+    "basis": "「現金払いの取引」→ 母集合は現金の取引に確定。sales 単体でフラグ・同義値なし（単一値）",
+    "types": [],
+    "axes": [],
+    "prev_unique": true,
+    "changed": false
+  },
+  {
+    "source": "rule_validation_questions.json",
+    "id": "r011",
+    "question": "関西エリアの店舗の売上を合計して。",
+    "unique": false,
+    "basis": "引用できる語が無い。同義の「近畿」を含めるか（型3）、閉店(close_date)店舗の売上を含めるか（型2）を質問文が決めていない",
+    "types": [
+      2,
+      3
+    ],
+    "axes": [],
+    "prev_unique": false,
+    "changed": false
+  },
+  {
+    "source": "rule_validation_questions.json",
+    "id": "r012",
+    "question": "EC経由の取引件数を月別に出して。",
+    "unique": false,
+    "basis": "引用できる語が無い。同義の「オンライン」を含めるか（型3）、売上の無い月をゼロ行として並べるか（型1）を質問文が決めていない",
+    "types": [
+      1,
+      3
+    ],
+    "axes": [
+      "月"
+    ],
+    "prev_unique": false,
+    "changed": false
+  },
+  {
+    "source": "rule_validation_questions.json",
+    "id": "r013",
+    "question": "2026年1月に売上があった店舗の数は？",
+    "unique": true,
+    "basis": "「2026年1月に売上があった店舗」→ 当月に取引のある店舗に母集合を限定すると質問文が言っている（単一値）",
+    "types": [],
+    "axes": [],
+    "prev_unique": true,
+    "changed": false
+  },
+  {
+    "source": "rule_validation_questions.json",
+    "id": "r014",
+    "question": "商品中分類別の平均販売単価を出して。",
+    "unique": false,
+    "basis": "引用できる語が無い。廃番(is_discontinued)商品の明細を含めるかを質問文が決めていない（型2）",
+    "types": [
+      2
+    ],
+    "axes": [
+      "商品中分類"
+    ],
+    "prev_unique": false,
+    "changed": false
+  }
+]

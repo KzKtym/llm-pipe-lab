@@ -1,0 +1,39 @@
+[project]
+name = "llm-pipe-lab"
+version = "0.1.0"
+description = "NL→SQL パイプラインと、その評価基盤の技術検証"
+requires-python = ">=3.12"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+extend-exclude = ["*/migrations/*"]
+
+[tool.ruff.lint]
+# E,F: pyflakes / pycodestyle。W: 警告。I: import 順。UP: 新しい書き方への追随。
+# B: bugbear（実際にバグになりやすい書き方）。SIM: 冗長な分岐。
+select = ["E", "F", "W", "I", "UP", "B", "SIM"]
+
+ignore = [
+    # 日本語の説明文が入るため、行長は E501 ではなく formatter に任せる。
+    # 全角文字を1桁と数えるため、読みやすい幅でも E501 に当たる。
+    "E501",
+    # `except Exception` で受けて記録層へ返す箇所が実験ランナーに複数ある。
+    # 1問の失敗で全体を落とさないための意図的な設計（services.py の docstring 参照）。
+    "BLE001",
+    # ネストした if を1つにまとめる指摘。**意図的に分けている箇所がある。**
+    # `population_rules.py` の型1・型2判定では、外側が「そもそもDBへ問い合わせるか」の
+    # ガード、内側が「問い合わせた結果どうだったか」で、意味の層が違う。
+    # `and` で1本にすると、実データ照会が起きる条件が読み取りにくくなる。
+    "SIM102",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# E501: テストは長い実データのリテラルを持つ。可読性優先。
+# SIM117: `with patch(...):` の内側に `with assertRaises(...):` を置く形。
+#         1行にまとめると「何を差し替えて、何を期待しているか」が読み取りにくい。
+"*/tests/*" = ["E501", "SIM117"]
+"*/tests.py" = ["E501", "SIM117"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app", "config"]

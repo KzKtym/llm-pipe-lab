@@ -1,0 +1,218 @@
+[
+  {
+    "id": "s901",
+    "question": "現在営業中の店舗は何店舗ありますか？",
+    "unique": true,
+    "types": [],
+    "basis": "「現在営業中の」→ 閉店済み（close_date あり、実数3件）を除くと質問文が明言している。母集合が特定される（型2なし）。区分でのグループ化は無く、表記ゆれ・欠測の判断も不要",
+    "group_by": null,
+    "tables": ["stores"]
+  },
+  {
+    "id": "s902",
+    "question": "店舗形態別に、店舗数を教えてください。",
+    "unique": false,
+    "types": [2],
+    "basis": "「店舗数」→ 閉店済み店舗（close_date あり、実数3件）を数に含めるか質問文が決めていない（型2）。店舗形態3区分の行の顔ぶれは変わらないが、各区分の数が静かに変わる。store_type は3値で表記ゆれ・欠測なし（型3・型4なし）",
+    "group_by": "店舗形態(store_type)",
+    "tables": ["stores"]
+  },
+  {
+    "id": "s903",
+    "question": "会員は全部で何人いますか？",
+    "unique": true,
+    "types": [],
+    "basis": "「全部で何人」→ 退会・休眠（is_active=false、実数2,924件）も含めた総数だと質問文が明言している（型2なし）。グループ化が無く gender・pref の同義や欠測の判断も不要（型3・型4なし）",
+    "group_by": null,
+    "tables": ["members"]
+  },
+  {
+    "id": "s904",
+    "question": "有効会員は何人いますか？",
+    "unique": true,
+    "types": [],
+    "basis": "「有効会員」→ is_active=true に限定すると質問文が明言している（退会・休眠2,924件を除く、型2なし）。グループ化なし、同義・欠測の判断も不要（型3・型4なし）",
+    "group_by": null,
+    "tables": ["members"]
+  },
+  {
+    "id": "s905",
+    "question": "会員ランク別の会員数を出してください。",
+    "unique": false,
+    "types": [2],
+    "basis": "「会員数」→ 退会・休眠（is_active=false、実数2,924件）を含めるか質問文が決めていない（型2）。member_rank は3値で表記ゆれ・欠測なし（型3・型4なし）",
+    "group_by": "会員ランク(member_rank)",
+    "tables": ["members"]
+  },
+  {
+    "id": "s906",
+    "question": "都道府県別の会員数を教えてください。",
+    "unique": false,
+    "types": [2, 4],
+    "basis": "「会員数」→ 退会・休眠（is_active=false、実数2,924件）を含めるか未指定（型2）。かつ pref の包括値「その他」（実数1,048件）を都道府県として並べるか未指定（型4）。pref に NULL は無い（実数0件）",
+    "group_by": "都道府県(pref)",
+    "tables": ["members"]
+  },
+  {
+    "id": "s907",
+    "question": "月別の売上合計を出してください。",
+    "unique": true,
+    "types": [],
+    "basis": "「月別の売上合計」→ 取引（sales.total_amount）を月で合算するだけで、母集合を左右する未指定の前提が無い。データは25か月に連続分布し空の月が無い（実数25か月）ので並べる期間の判断も要らない（型1なし）。実体マスタへの結合が無く状態フラグは関与しない（型2なし）、金額合算に channel の同義は影響しない（型3なし）",
+    "group_by": "月(sold_at)",
+    "tables": ["sales"]
+  },
+  {
+    "id": "s908",
+    "question": "店舗別に月別の売上推移を出してください。",
+    "unique": false,
+    "types": [1, 2],
+    "basis": "「店舗別に月別の売上推移」→ 取引の無い店舗×月を0行として並べるか未指定、また取引実績の全く無い店舗（日次集計に現れない店舗は実数2店舗）を出すか未指定（型1）。加えて閉店済み店舗（close_date あり、実数3件）を推移に含めるか未指定（型2）",
+    "group_by": "店舗(store)×月(sold_at)",
+    "tables": ["sales", "stores"]
+  },
+  {
+    "id": "s909",
+    "question": "廃番になっていない商品は何点ありますか？",
+    "unique": true,
+    "types": [],
+    "basis": "「廃番になっていない」→ is_discontinued=false に限定すると質問文が明言している（廃番48件を除く、型2なし）。グループ化なし、同義・欠測の判断も不要（型3・型4なし）",
+    "group_by": null,
+    "tables": ["products"]
+  },
+  {
+    "id": "s910",
+    "question": "商品大分類別の商品数を教えてください。",
+    "unique": false,
+    "types": [2],
+    "basis": "「商品数」→ 廃番商品（is_discontinued=true、実数48件）を含めるか質問文が決めていない（型2）。category_l は6値で表記ゆれ・欠測なし（型3・型4なし）",
+    "group_by": "商品大分類(category_l)",
+    "tables": ["products"]
+  },
+  {
+    "id": "s911",
+    "question": "エリア別の店舗数を出してください。",
+    "unique": false,
+    "types": [2, 3],
+    "basis": "「エリア別の店舗数」→ region の同義表記ゆれ「関西」（実数4件）と「近畿」（実数4件）を1エリアに集めるか別々に並べるか未指定（型3）。かつ閉店済み店舗（close_date あり、実数3件）を数に含めるか未指定（型2）",
+    "group_by": "エリア(region)",
+    "tables": ["stores"]
+  },
+  {
+    "id": "s912",
+    "question": "チャネル別の売上合計を出してください。",
+    "unique": false,
+    "types": [3],
+    "basis": "「チャネル別」→ channel の同義表記ゆれ「EC」（実数8,096件）と「オンライン」（実数7,985件）を1チャネルに集めるか別々に並べるか質問文が決めていない（型3）。売上合算に実体マスタは結合せず状態フラグは関与しない（型2なし）、channel に NULL は無い（実数0件、型4なし）",
+    "group_by": "チャネル(channel)",
+    "tables": ["sales"]
+  },
+  {
+    "id": "s913",
+    "question": "2025年の売上合計はいくらですか？",
+    "unique": true,
+    "types": [],
+    "basis": "「2025年の」→ 期間を2025年と明言し、全取引を合算するだけで母集合を左右する未指定の前提が無い。単一値でグループ化なし（型1なし）、実体マスタへの結合が無く状態フラグは関与しない（型2なし）、合算に channel 同義は影響しない（型3なし）、期間フィルタに欠測の判断は不要（型4なし）",
+    "group_by": null,
+    "tables": ["sales"]
+  },
+  {
+    "id": "s914",
+    "question": "会員1人あたりの平均購入金額を出してください。",
+    "unique": false,
+    "types": [1, 2],
+    "basis": "「会員1人あたり」→ 割る分母の会員に退会・休眠（is_active=false、実数2,924件）を含めるか未指定（型2）。かつ購入実績の無い会員を分母に入れるか（0として数えるか）未指定（型1）。会員1人あたりの母数が質問文で特定されていない",
+    "group_by": null,
+    "tables": ["sales", "members"]
+  },
+  {
+    "id": "s915",
+    "question": "性別ごとの会員数を教えてください。",
+    "unique": false,
+    "types": [2, 4],
+    "basis": "「性別ごとの会員数」→ gender の包括値「その他」（実数537件）と未登録 NULL（実数6,008件）をどう並べるか未指定（型4）。かつ退会・休眠（is_active=false、実数2,924件）を含めるか未指定（型2）",
+    "group_by": "性別(gender)",
+    "tables": ["members"]
+  },
+  {
+    "id": "s916",
+    "question": "2025年に入会した会員は何人ですか？",
+    "unique": false,
+    "types": [2],
+    "basis": "「2025年に入会した会員」→ 入会日で母集合は絞れるが、そのうち現在は退会・休眠している会員（is_active=false）を数に含めるか質問文が決めていない（型2）。2025年入会1,720件のうち現在 is_active=false は実数244件で、含めるかにより数が変わる",
+    "group_by": null,
+    "tables": ["members"]
+  },
+  {
+    "id": "s917",
+    "question": "店舗形態別の売上合計を出してください。",
+    "unique": false,
+    "types": [2],
+    "basis": "「店舗形態別の売上合計」→ 閉店した店舗（close_date あり、実数3件）の売上を合計に含めるか質問文が決めていない（型2）。店舗形態3区分の行の顔ぶれは変わらないが金額が静かに変わる。store_type は3値で同義・欠測なし（型3・型4なし）",
+    "group_by": "店舗形態(store_type)",
+    "tables": ["sales", "stores"]
+  },
+  {
+    "id": "s918",
+    "question": "四半期ごとの取引件数を出してください。",
+    "unique": true,
+    "types": [],
+    "basis": "「四半期ごとの取引件数」→ 取引（sales）を四半期で件数集計するだけで母集合を左右する未指定の前提が無い。データは9四半期に連続分布し空の四半期が無い（実数9四半期）ので並べる期間の判断も不要（型1なし）。実体マスタへの結合が無く状態フラグは関与しない（型2なし）、件数集計に channel 同義は影響しない（型3なし）",
+    "group_by": "四半期(sold_at)",
+    "tables": ["sales"]
+  },
+  {
+    "id": "s919",
+    "question": "廃番も含めた全商品の点数を教えてください。",
+    "unique": true,
+    "types": [],
+    "basis": "「廃番も含めた全商品」→ is_discontinued に関わらず全件と質問文が明言している（廃番48件も含む、型2なし）。グループ化なし、同義・欠測の判断も不要（型3・型4なし）",
+    "group_by": null,
+    "tables": ["products"]
+  },
+  {
+    "id": "s920",
+    "question": "関東エリアにある店舗の一覧を出してください。",
+    "unique": false,
+    "types": [2],
+    "basis": "「関東エリアにある店舗の一覧」→ 閉店した店舗（close_date あり、実数3件）を一覧に含めるか質問文が決めていない（型2）。フィルタ値「関東」は region に同義表記ゆれが無く（「関東」は実数12件のみ、関西/近畿のような重複対象外）、型3は立たない",
+    "group_by": null,
+    "tables": ["stores"]
+  },
+  {
+    "id": "s921",
+    "question": "現在取り扱い中の商品の平均定価はいくらですか？",
+    "unique": true,
+    "types": [],
+    "basis": "「現在取り扱い中の」→ 廃番（is_discontinued=true、実数48件）を除くと質問文が明言し、「定価」で参照列（unit_price）も特定している（型2なし）。単一値でグループ化なし、同義・欠測の判断も不要（型3・型4なし）",
+    "group_by": null,
+    "tables": ["products"]
+  },
+  {
+    "id": "s922",
+    "question": "会員ランク別の平均購入金額を出してください。",
+    "unique": false,
+    "types": [1, 2],
+    "basis": "「会員ランク別の平均購入金額」→ 平均の分母の会員に退会・休眠（is_active=false、実数2,924件）を含めるか未指定（型2）。かつ購入実績の無い会員を分母に入れるか未指定（型1）。member_rank 自体は3値で同義・欠測なし",
+    "group_by": "会員ランク(member_rank)",
+    "tables": ["sales", "members"]
+  },
+  {
+    "id": "s923",
+    "question": "商品中分類別の売上金額を出してください。",
+    "unique": false,
+    "types": [2],
+    "basis": "「商品中分類別の売上金額」→ 集計に商品マスタが結合され、廃番商品（is_discontinued=true、実数48件、いずれも売上実績あり）の売上を含めるか質問文が決めていない（型2）。category_m は20値で表記ゆれ・欠測なし（型3・型4なし）",
+    "group_by": "商品中分類(category_m)",
+    "tables": ["sale_items", "products"]
+  },
+  {
+    "id": "s924",
+    "question": "支払方法別の取引件数を出してください。",
+    "unique": true,
+    "types": [],
+    "basis": "「支払方法別の取引件数」→ payment_method の4区分で取引を件数集計するだけで未指定の前提が無い。payment_method に NULL は無く（実数0件、4値の合計が全80,000件に一致）表記ゆれも無い（型4・型3なし）、実体マスタへの結合が無く状態フラグは関与しない（型2なし）",
+    "group_by": "支払方法(payment_method)",
+    "tables": ["sales"]
+  }
+]

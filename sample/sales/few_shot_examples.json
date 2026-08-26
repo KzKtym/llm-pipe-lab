@@ -1,0 +1,26 @@
+[
+  {
+    "question": "1取引あたりの平均商品点数（購入数量の合計）を、小数第1位まで求めて",
+    "sql": "SELECT ROUND(AVG(t.qty), 1) AS avg_items_per_sale\nFROM (\n  SELECT sale_id, SUM(quantity) AS qty\n  FROM demo_sales.sale_items\n  GROUP BY sale_id\n) t"
+  },
+  {
+    "question": "店舗形態ごとの、1店舗あたりの平均取引件数を、小数第1位まで求めて",
+    "sql": "SELECT st.store_type, ROUND(AVG(t.cnt), 1) AS avg_txn_per_store\nFROM demo_sales.stores st\nJOIN (\n  SELECT store_id, COUNT(*) AS cnt\n  FROM demo_sales.sales\n  GROUP BY store_id\n) t ON t.store_id = st.store_id\nGROUP BY st.store_type\nORDER BY st.store_type"
+  },
+  {
+    "question": "日次店舗サマリ（daily_store_summary）を使って、店舗名ごとの営業日数（取引があった日数）を多い順で教えて",
+    "sql": "SELECT st.store_name, COUNT(*) AS active_days\nFROM demo_sales.daily_store_summary d\nJOIN demo_sales.stores st ON st.store_id = d.store_id\nGROUP BY st.store_name\nORDER BY active_days DESC"
+  },
+  {
+    "question": "2025年第4四半期（2025年10月〜12月）の総売上（税抜）はいくら？",
+    "sql": "SELECT SUM(total_amount) AS sales_amount\nFROM demo_sales.sales\nWHERE sold_at >= '2025-10-01' AND sold_at < '2026-01-01'"
+  },
+  {
+    "question": "クレジット払いの取引は全体の何％か、件数ベースで小数第1位まで求めて",
+    "sql": "SELECT ROUND(100.0 * COUNT(*) FILTER (WHERE payment_method = 'クレジット') / COUNT(*), 1) AS credit_share_pct\nFROM demo_sales.sales"
+  },
+  {
+    "question": "店舗形態ごとに、取引件数と、そのうちクレジット払いの取引件数を教えて",
+    "sql": "SELECT st.store_type,\n       COUNT(*) AS txn_count,\n       COUNT(*) FILTER (WHERE sa.payment_method = 'クレジット') AS credit_count\nFROM demo_sales.sales sa\nJOIN demo_sales.stores st ON st.store_id = sa.store_id\nGROUP BY st.store_type\nORDER BY st.store_type"
+  }
+]
