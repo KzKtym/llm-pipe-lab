@@ -1,7 +1,7 @@
 # llm_pipe_lab — NL→SQL 実験パイプライン（Django BFF + core pipeline）
 # runserver で動くことを目的とした最小構成。バージョンは移植元 venv に準拠。
 
-Django==5.1.15
+Django==5.2.16
 python-decouple==3.8
 psycopg2-binary==2.9.12
 whitenoise==6.6.0
